@@ -24,7 +24,7 @@ import { apiAuth, loginOtherApplication } from "./src/api/authentication";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import MessageBox from "./src/api/msg";
 import UpdateVersion from "./src/components/UpdateVersion";
-
+import { xt ,getDataStorage} from "./src/api/service";
 import $xt from "./src/api/xtools";
 import Passcode from "./src/auth/passcode";
 import Login from "./src/auth/login";
@@ -58,9 +58,11 @@ export default function App({ navigation }) {
   const notificationListener = useRef();
   const responseListener = useRef();
   const [notification, setNotification] = useState(false);
-
+  const [lang, setLang] = useState({});
+  const [themes, setthemes] = useState("");
   useEffect(() => {
     const fetchData = async () => {
+      getLangDF();
       // await versionUpdate();
       // global.loadeData = false;
       try {
@@ -121,6 +123,14 @@ export default function App({ navigation }) {
           setInitialScreen("Passcode");
         }
       }
+    };
+    const getLangDF = async () => {
+        let lang_ = await xt.getLang();
+        setLang(lang_);
+
+        let themes_key = await getDataStorage("themes_ppn") || "light";
+        setthemes(themes_key)
+
     };
     const getPermissionAsync = async () => {
       var { status } = await Location.requestForegroundPermissionsAsync();
@@ -224,7 +234,7 @@ export default function App({ navigation }) {
                     headerRight: () => <HeaderRight navigation={navigation} showScan={false} showIcon={false} />,
                     headerLeft: () => <HeaderLeft navigation={navigation} />,
                     headerStyle: {
-                      backgroundColor: colors.grey,
+                      backgroundColor: themes == 'light' ? colors.white : colors.back_dark,
                       shadowColor: "transparent",
                       elevation: 0,
                     },
@@ -232,7 +242,7 @@ export default function App({ navigation }) {
                     headerTitleStyle: {
                       fontWeight: "bold",
                     },
-                    headerTintColor: colors.white,
+                    headerTintColor: themes == 'light' ? colors.black : colors.white,
 
                   })}
                 >

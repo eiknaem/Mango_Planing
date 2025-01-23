@@ -38,5 +38,6 @@ export const color = {
   blueCA: "#0027C8",
   lightblue: "#03C8E3",
   brightblue: "#88B8FF",
+  back_dark :'#1C213B'
 
 };
