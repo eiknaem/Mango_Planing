@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "512570511555",
+    "firebase_url": "https://mango-qcm.firebaseio.com",
+    "project_id": "mango-qcm",
+    "storage_bucket": "mango-qcm.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:512570511555:android:f889336c6ec4d090a61276",
+        "android_client_info": {
+          "package_name": "com.mangoconsultant.app.qcm"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "512570511555-abqjk0icmblk70vuslp96uics1dkd4b9.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCAfxMj7v-W9WHpDR5Hx0RQ4AvagOxOJSA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "512570511555-abqjk0icmblk70vuslp96uics1dkd4b9.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

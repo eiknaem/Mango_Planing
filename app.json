@@ -1,0 +1,73 @@
+{
+  "expo": {
+    "name": "Mango Planning",
+    "slug": "Planning",
+    "scheme": "mangoplan",
+    "version": "2.3.0",
+    "platforms": [
+      "ios",
+      "android"
+    ],
+    "icon": "./assets/icon.png",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "cover",
+      "backgroundColor": "#07a063"
+    },
+    "updates": {
+      "enabled": false,
+      "fallbackToCacheTimeout": 0
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "plugins": [
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "usesCleartextTraffic": true
+          }
+        }
+      ]
+    ],
+    "android": {
+      "package": "com.mangoconsultant.mango.plan",
+      "versionCode": 25,
+      "permissions": [
+        "CAMERA",
+        "LOCATION",
+        "ACCESS_FINE_LOCATION",
+        "ACCESS_COARSE_LOCATION",
+        "READ_EXTERNAL_STORAGE",
+        "WRITE_EXTERNAL_STORAGE",
+        "CAMERA_ROLL",
+        "READ_INTERNAL_STORAGE",
+        "RECORD_AUDIO",
+        "USE_BIOMETRIC",
+        "USE_FINGERPRINT"
+      ]
+    },
+    "ios": {
+      "supportsTablet": true,
+      "requireFullScreen": true,
+      "usesIcloudStorage": true,
+      "buildNumber": "2.3.0.2",
+      "bundleIdentifier": "com.mangoconsultant.planning",
+      "infoPlist": {
+        "NSCameraUsageDescription": "This app requires access to the camera to capture the progress of the work.",
+        "NSLocationWhenInUseUsageDescription": "This app requires access to a location to check photo coordinates in the update process.",
+        "NSPhotoLibraryUsageDescription": "This app requires access to camera and images for use in register",
+        "NSFaceIDUsageDescription": "This app will optionally use Face ID or Touch ID to save login"
+      }
+    },
+    "web": {
+      "favicon": "./assets/icon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "19ceee12-2dbc-43ac-94a9-a50dceb9552c"
+      }
+    }
+  }
+}
