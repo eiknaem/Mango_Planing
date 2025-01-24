@@ -355,6 +355,13 @@ export default function ProjectScreen({ route, navigation }) {
             return null;
         }
     };
+    const onSetting = () => {
+        setShowMenu(false);
+        setDataStorage("ProjectsearchValue", "");
+        navigation.navigate("Setting", {
+          site: dataServer,
+        });
+      };
     const renderMenu = () => {
         return isShowMenu && (
             <Modal
@@ -382,14 +389,15 @@ export default function ProjectScreen({ route, navigation }) {
                                 <Ionicons name="person-sharp" size={18} color="#8d99b2" />
                                 <Text style={[styles.h5, { marginLeft: 5 }]}>{lang.profile}</Text>
                             </View>
-                            <View style={{ flex: 1, flexDirection: "row", alignItems: "center", marginLeft: 5, borderBottomWidth: 1, borderBottomColor: colors.image_light }}>
+                            <TouchableOpacity style={{ flex: 1, flexDirection: "row", alignItems: "center", marginLeft: 5, borderBottomWidth: 1, borderBottomColor: colors.image_light }}>
                                 <Ionicons name="notifications-sharp" size={18} color="#8d99b2" />
                                 <Text style={[styles.h5, { marginLeft: 5 }]}>{lang.notification}</Text>
-                            </View>
-                            <View style={{ flex: 1, flexDirection: "row", alignItems: "center", marginLeft: 5, borderBottomWidth: 1, borderBottomColor: colors.image_light }}>
+                            </TouchableOpacity>
+                            <TouchableOpacity onPress={()=>onSetting()}
+                             style={{ flex: 1, flexDirection: "row", alignItems: "center", marginLeft: 5, borderBottomWidth: 1, borderBottomColor: colors.image_light }}>
                                 <Ionicons name="settings" size={18} color="#8d99b2" />
                                 <Text style={[styles.h5, { marginLeft: 5 }]}>{lang.setting_system}</Text>
-                            </View>
+                            </TouchableOpacity>
                             <View style={{ flex: 1, flexDirection: "row", alignItems: "center", marginLeft: 5 }}>
                                 <Ionicons name="power" size={18} color="#8d99b2" />
                                 <Text style={[styles.h5, { marginLeft: 5 }]}>{lang.setting_system}</Text>

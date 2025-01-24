@@ -37,6 +37,7 @@ import ProjectScreen from "./src/scenes/transition/project.component";
 import PlansScreen from "./src/scenes/transition/plans.component";
 // transitons
 import HomeLayout from "./src/template/home_layout";
+import SettingScreen from "./src/scenes/transition/setting.component";
 ////Potho////
 // import PassLogin from "./src/auth/passlogin";
 Notifications.setNotificationHandler({
@@ -256,6 +257,7 @@ export default function App({ navigation }) {
                 >
                   <Stack.Screen name="Passcode" component={Passcode} options={{ headerShown: false }} />
                   <Stack.Screen name="Login" component={Login} options={{ headerShown: false }} />
+                  <Stack.Screen name='Setting' component={SettingScreen} />
                   {/* // component */}
                   {renderProject()}
                   {renderPlan()}
