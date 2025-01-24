@@ -34,7 +34,7 @@ import PinCode from "./src/auth/pincode";
 import HeaderRight from "./src/components/headerRight";
 import HeaderLeft from "./src/components/headerLeft";
 import ProjectScreen from "./src/scenes/transition/project.component";
-
+import PlansScreen from "./src/scenes/transition/plans.component";
 // transitons
 import HomeLayout from "./src/template/home_layout";
 ////Potho////
@@ -210,10 +210,17 @@ export default function App({ navigation }) {
       <View></View>
     )
   }
-  const renderPlan = () => {
+  const renderProject = () => {
     return (
       <>
         <Stack.Screen name='Project' component={ProjectScreen} />
+      </>
+    )
+  }
+  const renderPlan = () => {
+    return (
+      <>
+        <Stack.Screen name='Plans' component={PlansScreen} />
       </>
     )
   }
@@ -250,6 +257,7 @@ export default function App({ navigation }) {
                   <Stack.Screen name="Passcode" component={Passcode} options={{ headerShown: false }} />
                   <Stack.Screen name="Login" component={Login} options={{ headerShown: false }} />
                   {/* // component */}
+                  {renderProject()}
                   {renderPlan()}
                 </Stack.Navigator>
                 <UpdateVersion />
