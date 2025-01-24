@@ -5,7 +5,7 @@ export const color = {
   pink: "#faebe9",
   blue: "#cfecf4",
   cream: "#fff5e7",
-  white: "#fff",
+  white: "#fbfbfc",
   black: "#231F20",
   black_t: "#616161",
   mangoGreen: "#44A97F",
@@ -38,6 +38,7 @@ export const color = {
   blueCA: "#0027C8",
   lightblue: "#03C8E3",
   brightblue: "#88B8FF",
-  back_dark :'#1C213B'
-
+  font_dark: "#222a45",
+  back_dark: '#1C213B',
+  back_bg: "#1a2238"
 };

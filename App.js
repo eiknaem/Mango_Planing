@@ -16,6 +16,7 @@ import {
   Prompt_300Light,
   Prompt_500Medium
 } from "@expo-google-fonts/prompt";
+import styles from "./src/stylesheet/styles";
 import * as Linking from "expo-linking";
 import * as Notifications from "expo-notifications";
 import * as Device from "expo-device";
@@ -24,7 +25,7 @@ import { apiAuth, loginOtherApplication } from "./src/api/authentication";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import MessageBox from "./src/api/msg";
 import UpdateVersion from "./src/components/UpdateVersion";
-import { xt ,getDataStorage} from "./src/api/service";
+import { xt, getDataStorage } from "./src/api/service";
 import $xt from "./src/api/xtools";
 import Passcode from "./src/auth/passcode";
 import Login from "./src/auth/login";
@@ -125,11 +126,11 @@ export default function App({ navigation }) {
       }
     };
     const getLangDF = async () => {
-        let lang_ = await xt.getLang();
-        setLang(lang_);
+      let lang_ = await xt.getLang();
+      setLang(lang_);
 
-        let themes_key = await getDataStorage("themes_ppn") || "light";
-        setthemes(themes_key)
+      let themes_key = await getDataStorage("themes_ppn") || "light";
+      setthemes(themes_key)
 
     };
     const getPermissionAsync = async () => {
@@ -234,7 +235,7 @@ export default function App({ navigation }) {
                     headerRight: () => <HeaderRight navigation={navigation} showScan={false} showIcon={false} />,
                     headerLeft: () => <HeaderLeft navigation={navigation} />,
                     headerStyle: {
-                      backgroundColor: themes == 'light' ? colors.white : colors.back_dark,
+                      backgroundColor: themes == 'light' ? colors.white : colors.back_bg,
                       shadowColor: "transparent",
                       elevation: 0,
                     },
