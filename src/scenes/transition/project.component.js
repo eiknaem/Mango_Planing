@@ -9,13 +9,16 @@ import {
     StyleSheet,
     FlatList,
     Dimensions,
-    ActivityIndicator
+    ActivityIndicator,
+    Modal,
+    TouchableWithoutFeedback
 } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
 import { Ionicons, FontAwesome, Feather, AntDesign } from "@expo/vector-icons";
 import linq from "js-linq";
 import { styles, colors } from "../../stylesheet/styles";
 import { xt, getDataStorage, setDataStorage } from "../../api/service";
+import { reFormatPicture } from "../../api/bind_api";
 import { apiAuth } from "../../api/authentication";
 import LoadingRows from "../../components/loadingRows";
 import NoRows from "../../components/noRows";
@@ -24,7 +27,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { err } from "react-native-svg";
 import moment from "moment";
 import { isLoading } from "expo-font";
-
+import $xt from "../../api/xtools";
 export default function ProjectScreen({ route, navigation }) {
     // const theme = useTheme();
     const $linq = (arr) => new linq(arr);
@@ -51,7 +54,7 @@ export default function ProjectScreen({ route, navigation }) {
         deadline: 0
     });
     const { width, height } = Dimensions.get('window');
-
+    const [isShowMenu, setShowMenu] = useState(false);
 
 
     // const [isRefresh, setRefresh] = React.useState(false);
@@ -62,12 +65,13 @@ export default function ProjectScreen({ route, navigation }) {
             // headerRight: () => <HeaderRight navigation={navigation} showIcon={true} showWarehouse={true} docList={getdocList} />,
             headerRight: () => headerRight()
         });
-    }, [route, isCountNoti]);
+    }, [route, isCountNoti, loadfile,isShowMenu]);
     const headerLeft = () => {
         let _dataStore = global?.DataStore?.store?.length || 0
         return (
             <View style={{ flexDirection: 'row', width: width * 0.2, height: height * 0.04, justifyContent: "center", alignItems: "center" }}>
-                <TouchableOpacity style={{ marginRight: '20%', justifyContent: "center", alignItems: "center", }}>
+                <TouchableOpacity onPress={() => setShowMenu(!isShowMenu)}
+                    style={{ marginRight: '20%', justifyContent: "center", alignItems: "center", zIndex: 20 }}>
                     <AntDesign name="appstore1" size={18} color={themes == 'light' ? colors.black : colors.white} />
                 </TouchableOpacity>
             </View>
@@ -84,18 +88,32 @@ export default function ProjectScreen({ route, navigation }) {
                     style={{ marginRight: '20%', justifyContent: "center", alignItems: "center" }}>
                     <FontAwesome name="refresh" size={18} color={themes == 'light' ? colors.black : colors.white} />
                 </TouchableOpacity>
-
-                <Text style={{ color: '#fff' }}>{loadfile ? "true" : "false"}</Text>
                 <TouchableOpacity style={{ marginRight: '20%', justifyContent: "center", alignItems: "center" }}>
                     <Ionicons name="notifications-outline" size={22} color={themes == 'light' ? colors.black : colors.white} />
                     {isCountNoti > 0 && (
-                        <View style={{ width: width * 0.05, height: height * 0.025, position: "absolute", backgroundColor: colors.red_t, right: width * -0.001, top: "-30%", borderRadius: 20, alignItems: "center", justifyContent: "center" }}>
-                            {loadfile
-                                ? <ActivityIndicator size={12} color={"#fff"} />
-                                : (<Text style={[styles.h5_bold, { color: colors.white, fontSize: 12, marginLeft: 3 }]}>{isCountNoti > 99 ? "99+" : isCountNoti} </Text>)}
-                            {/* <ActivityIndicator size={12} color={"#fff"} /> */}
+                        <View
+                            style={{
+                                width: width * 0.05,
+                                height: height * 0.025,
+                                position: "absolute",
+                                backgroundColor: colors.red_t,
+                                right: 0.5, // ปรับเป็นตัวเลขที่เหมาะสม
+                                top: -10, // ปรับเป็นตัวเลขที่เหมาะสม
+                                borderRadius: 20,
+                                alignItems: "center",
+                                justifyContent: "center",
+                            }}
+                        >
+                            {loadfile ? (
+                                <ActivityIndicator size={12} color={"#fff"} />
+                            ) : (
+                                <Text style={[styles.h5_bold, { color: colors.white, fontSize: 12 }]}>
+                                    {isCountNoti > 99 ? "99+" : isCountNoti}
+                                </Text>
+                            )}
                         </View>
                     )}
+
                 </TouchableOpacity >
             </View >
         )
@@ -213,11 +231,22 @@ export default function ProjectScreen({ route, navigation }) {
         data.forEach((v, i) => {
             v.startdate = moment(v.j_start || v.startdate).format("DD/MM/YYYY");
             v.enddate = moment(v.j_end || v.enddate).format("DD/MM/YYYY");
-            v.pathpic = v.pathpic || v.pm || null;
+            v.pathpic = v.pathpic || v.pm || null; // ตรวจสอบว่ามีค่า
             v.project_img = v.project_img || null;
             v.pre_des = v.pre_des || v.project || null;
             v.progress_per = v.progress_per;
         });
+        for (let xx in data) {
+            let x = data[xx];
+            try {
+                x.pathpic = ongetimg({ download: false, file: x.pathpic });
+                // x.project_img = ongetimg({ download: false, file: x.project_img });
+                // x.project_img = await reFormatPicture(x.project_img);;
+
+            } catch (ex) {
+                MessageBox.Alert(`Error`, ex.toString(), "OK", navigation);
+            }
+        }
         console.log("data", data);
         onFilter(data, searchValue_);
     };
@@ -248,28 +277,52 @@ export default function ProjectScreen({ route, navigation }) {
         setDataloadding(false);
     };
     const onReadNotification = async () => {
+        console.log("Start onReadNotification");
+        setLoadfile(true);
+        console.log("setLoadfile(true)");
+
         try {
-            setLoadfile(true)
-            // let res2 = await xt.getServer(`Planning/Planning/Planning_Noti_showAll`);
             let res2 = await xt.showAllNoti();
             console.log(res2, "allNotiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii");
-            // console.log(res2.length, "count");
-            let cleanData = $linq(res2).where(x => x.read_timestamp == null || x.count_d > 0 || x.count_e > 0 || x.count_s > 0).toArray();
-            console.log(cleanData, "res noti:==============================================================:==============================================================:============================================================== ");
-
-            setCountNoti(cleanData.length); // CountNoti
-            setDataNoti(cleanData); // ShowAllNoti
-console.log("set");
-
+            let cleanData = $linq(res2)
+                .where(x => x.read_timestamp == null || x.count_d > 0 || x.count_e > 0 || x.count_s > 0)
+                .toArray();
+            console.log(cleanData, "Filtered Notifications");
+            setCountNoti(cleanData.length);
+            setDataNoti(cleanData);
+            setLoadfile(false);
         } catch (error) {
-            console.log("catch noti: ", error);
-            setLoadfile(false)
-        } finally {
-            setLoadfile(false)
-
+            console.log("Error in onReadNotification:", error);
         }
+    };
 
-    }
+    // const onReadNotification = async () => {
+    //     try {
+    //         console.log("onReadNotification");
+    //         setLoadfile(true)
+    //         console.log("setLoadfile to true");
+    //         // let res2 = await xt.getServer(`Planning/Planning/Planning_Noti_showAll`);
+    //         let res2 = await xt.showAllNoti();
+    //         console.log(res2, "allNotiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii");
+    //         // console.log(res2.length, "count");
+    //         let cleanData = $linq(res2).where(x => x.read_timestamp == null || x.count_d > 0 || x.count_e > 0 || x.count_s > 0).toArray();
+    //         console.log(cleanData, "res noti:==============================================================:==============================================================:============================================================== ");
+
+    //         setCountNoti(cleanData.length); // CountNoti
+    //         setDataNoti(cleanData); // ShowAllNoti
+    //         console.log("set");
+
+    //     } catch (error) {
+    //         console.log("catch noti: ", error);
+    //         setLoadfile(false)
+    //     } finally {
+    //         setLoadfile(false)
+    //         console.log("setLoadfile to false");
+
+
+    //     }
+
+    // }
     const onLoadAuth = async () => {
         let server_data = (await apiAuth.getAuth()).data;
         let auth = server_data.auth;
@@ -282,15 +335,95 @@ console.log("set");
         onloadproject();
         onReadNotification();
     };
+    const ongetimg = ({ download, file }) => {
+        if (file) {
+            const imgUrl =
+                dataServer + "api/file/download/?download=" + download + "&id=" + file;
+            // console.log("Image URL:", imgUrl);
+            return imgUrl;
+        } else {
+            // console.log("Default image used");
+            return null;
+        }
+    };
+    const ongetimgProject = ({ download, file }) => {
+        if (file) {
+            var ing =
+                dataServer + "api/file/download/?download=" + download + "&id=" + file;
+            return { uri: ing };
+        } else {
+            return null;
+        }
+    };
+    const renderMenu = () => {
+        return isShowMenu && (
+            <Modal
+                animationType="fade"
+                transparent={true}
+                visible={isShowMenu}
+                onRequestClose={() => setShowMenu(false)}
+            >
+                <TouchableWithoutFeedback onPress={() => setShowMenu(false)}>
+                    <View style={{ flex: 1, backgroundColor: "rgba(0,0,0,0.2)" }}>
+                        <View
+                            style={{
+                                width: width * 0.4,
+                                height: height * 0.2,
+                                top: height * 0.10,
+                                left: width * 0.06,
+                                borderWidth: 1,
+                                borderColor: colors.image_light,
+                                borderRadius: 10,
+                                backgroundColor: colors.white,
+                                position: "absolute",
+                            }}
+                        >
+                            <View style={{ flex: 1, flexDirection: "row", alignItems: "center", marginLeft: 5, borderBottomWidth: 1, borderBottomColor: colors.image_light }}>
+                                <Ionicons name="person-sharp" size={18} color="#8d99b2" />
+                                <Text style={[styles.h5, { marginLeft: 5 }]}>{lang.profile}</Text>
+                            </View>
+                            <View style={{ flex: 1, flexDirection: "row", alignItems: "center", marginLeft: 5, borderBottomWidth: 1, borderBottomColor: colors.image_light }}>
+                                <Ionicons name="notifications-sharp" size={18} color="#8d99b2" />
+                                <Text style={[styles.h5, { marginLeft: 5 }]}>{lang.notification}</Text>
+                            </View>
+                            <View style={{ flex: 1, flexDirection: "row", alignItems: "center", marginLeft: 5, borderBottomWidth: 1, borderBottomColor: colors.image_light }}>
+                                <Ionicons name="settings" size={18} color="#8d99b2" />
+                                <Text style={[styles.h5, { marginLeft: 5 }]}>{lang.setting_system}</Text>
+                            </View>
+                            <View style={{ flex: 1, flexDirection: "row", alignItems: "center", marginLeft: 5 }}>
+                                <Ionicons name="power" size={18} color="#8d99b2" />
+                                <Text style={[styles.h5, { marginLeft: 5 }]}>{lang.setting_system}</Text>
+                            </View>
+                        </View>
+                    </View>
+                </TouchableWithoutFeedback>
+            </Modal>
+        )
+    };
+    
     const renderItem = ({ item, index }) => {
-        console.log("item", item);
         return (
             <>
                 <View style={[styles.blockcard, { backgroundColor: themes == 'light' ? colors.white : colors.font_dark }]}>
                     {/* Header */}
                     <View style={{ width: '100%', height: 250, }}>
-                        <View style={[styles.blockcard, { flex: 2, alignItems: 'center', justifyContent: 'center', backgroundColor: themes == 'light' ? colors.white : colors.back_dark }]}>
-                            <Text style={[styles.h3_bold, { color: '#8d99b2', }]}>no image avaliable</Text>
+                        <View style={[styles.blockcard, { flex: 2, alignItems: 'center', justifyContent: 'center', backgroundColor: themes == 'light' ? colors.image_light : colors.back_dark }]}>
+                            {!$xt.isEmpty(item.project_img) ?
+                                (
+                                    <Image
+                                        style={{
+                                            width: "100%",
+                                            height: "100%",
+                                        }}
+                                        resizeMode="contain"
+                                        source={ongetimgProject(false, item.project_img)}
+                                    ></Image>
+                                )
+                                :
+                                (
+                                    <Text style={[styles.h3, { color: '#8d99b2', }]}>no image avaliable</Text>
+
+                                )}
                         </View>
                         <View style={[styles.blockcard, { flex: 1, backgroundColor: themes == 'light' ? colors.white : colors.font_dark }]}>
                             <View style={{ flex: 1, flexDirection: 'row', backgroundColor: themes == 'light' ? colors.white : colors.font_dark }}>
@@ -307,7 +440,20 @@ console.log("set");
                             {/* Body */}
                             <View style={{ flex: 2, flexDirection: 'row', backgroundColor: themes == 'light' ? colors.white : colors.font_dark }}>
                                 <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center' }}>
-                                    <View style={{ width: 30, height: 30, backgroundColor: 'lime', borderRadius: 30, }}>
+                                    <View style={{ width: 30, height: 30, borderWidth: 1, borderColor: colors.greentree, borderRadius: 30, }}>
+                                        <Image
+                                            style={{
+                                                width: "100%",
+                                                height: "100%",
+                                            }}
+                                            resizeMode="contain"
+                                            // source={{ uri: ongetimg(false, item.pathpic)}}
+                                            source={
+                                                !$xt.isEmpty(item.pathpic)
+                                                    ? { uri: item.pathpic } // ลิงก์ภาพ
+                                                    : require("../../../assets/images/user.png") // fallback ภาพ default
+                                            }
+                                        ></Image>
                                     </View>
                                     <Text style={[styles.h5, { marginLeft: 5, fontSize: 12, color: themes == 'light' ? colors.black : colors.white }]}>PM : {item.empfullname_t || lang.overlayNoRows}</Text>
                                 </View>
@@ -331,30 +477,33 @@ console.log("set");
         );
     };
     return (
-        < View style={{ flex: 1, backgroundColor: themes == 'light' ? colors.white : colors.back_bg, padding: 10 }} >
-            {dataemty == false ? (
-                <FlatList
-                    data={dataArr}
-                    renderItem={renderItem}
-                    keyExtractor={(item, index) => index.toString()}
-                    showsVerticalScrollIndicator={false}
-                    // ListHeaderComponent={renderHeader()}
-                    // showsVerticalScrollIndicator={false}
-                    initialNumToRender={10} // Reduce initial render amount
-                    maxToRenderPerBatch={5} // Reduce number in each render batch
-                    windowSize={3} // Reduce the window size
-                />
-            ) : (
-                <>
-                    {dataloadding == false ? (
-                        <NoRows />
-                    ) : (
-                        <LoadingRows />
-                    )}
-                </>
-            )}
+        <>
+            {renderMenu()}
+            < View style={{ flex: 1, backgroundColor: themes == 'light' ? colors.white : colors.back_bg, padding: 10 }} >
+                {dataemty == false ? (
+                    <FlatList
+                        data={dataArr}
+                        renderItem={renderItem}
+                        keyExtractor={(item, index) => index.toString()}
+                        showsVerticalScrollIndicator={false}
+                        // ListHeaderComponent={renderHeader()}
+                        // showsVerticalScrollIndicator={false}
+                        initialNumToRender={10} // Reduce initial render amount
+                        maxToRenderPerBatch={5} // Reduce number in each render batch
+                        windowSize={3} // Reduce the window size
+                    />
+                ) : (
+                    <>
+                        {dataloadding == false ? (
+                            <NoRows />
+                        ) : (
+                            <LoadingRows />
+                        )}
+                    </>
+                )}
 
-        </View>
+            </View>
+        </>
     );
 }
 

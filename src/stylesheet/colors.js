@@ -40,5 +40,6 @@ export const color = {
   brightblue: "#88B8FF",
   font_dark: "#222a45",
   back_dark: '#1C213B',
-  back_bg: "#1a2238"
+  back_bg: "#1a2238",
+  image_light: "#edf1f7"
 };
