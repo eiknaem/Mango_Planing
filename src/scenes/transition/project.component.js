@@ -65,7 +65,7 @@ export default function ProjectScreen({ route, navigation }) {
             // headerRight: () => <HeaderRight navigation={navigation} showIcon={true} showWarehouse={true} docList={getdocList} />,
             headerRight: () => headerRight()
         });
-    }, [route, isCountNoti, loadfile,isShowMenu]);
+    }, [route, isCountNoti, loadfile, isShowMenu]);
     const headerLeft = () => {
         let _dataStore = global?.DataStore?.store?.length || 0
         return (
@@ -359,9 +359,22 @@ export default function ProjectScreen({ route, navigation }) {
         setShowMenu(false);
         setDataStorage("ProjectsearchValue", "");
         navigation.navigate("Setting", {
-          site: dataServer,
+            site: dataServer,
         });
-      };
+    };
+    const beforeNextImage = (item) => {
+        setDataStorage('searchTime', "");
+        setDataStorage("plansearchValue", "");
+        setDataStorage("statusValue", "inprogress,notstart,delay,overdue");
+        setDataStorage("ProjectsearchValue", "");
+        navigation.navigate("Plans", {
+            site: dataServer,
+            pre_event2: item.pre_event2,
+            pre_event: item.pre_event,
+            pre_des: item.pre_des,
+            decimal: decimal,
+        });
+    };
     const renderMenu = () => {
         return isShowMenu && (
             <Modal
@@ -393,8 +406,8 @@ export default function ProjectScreen({ route, navigation }) {
                                 <Ionicons name="notifications-sharp" size={18} color="#8d99b2" />
                                 <Text style={[styles.h5, { marginLeft: 5 }]}>{lang.notification}</Text>
                             </TouchableOpacity>
-                            <TouchableOpacity onPress={()=>onSetting()}
-                             style={{ flex: 1, flexDirection: "row", alignItems: "center", marginLeft: 5, borderBottomWidth: 1, borderBottomColor: colors.image_light }}>
+                            <TouchableOpacity onPress={() => onSetting()}
+                                style={{ flex: 1, flexDirection: "row", alignItems: "center", marginLeft: 5, borderBottomWidth: 1, borderBottomColor: colors.image_light }}>
                                 <Ionicons name="settings" size={18} color="#8d99b2" />
                                 <Text style={[styles.h5, { marginLeft: 5 }]}>{lang.setting_system}</Text>
                             </TouchableOpacity>
@@ -408,14 +421,15 @@ export default function ProjectScreen({ route, navigation }) {
             </Modal>
         )
     };
-    
+
     const renderItem = ({ item, index }) => {
         return (
             <>
                 <View style={[styles.blockcard, { backgroundColor: themes == 'light' ? colors.white : colors.font_dark }]}>
                     {/* Header */}
                     <View style={{ width: '100%', height: 250, }}>
-                        <View style={[styles.blockcard, { flex: 2, alignItems: 'center', justifyContent: 'center', backgroundColor: themes == 'light' ? colors.image_light : colors.back_dark }]}>
+                        <TouchableOpacity style={[styles.blockcard, { flex: 2, alignItems: 'center', justifyContent: 'center', backgroundColor: themes == 'light' ? colors.image_light : colors.back_dark }]}
+                            onPress={() => beforeNextImage(item)}>
                             {!$xt.isEmpty(item.project_img) ?
                                 (
                                     <Image
@@ -425,14 +439,16 @@ export default function ProjectScreen({ route, navigation }) {
                                         }}
                                         resizeMode="contain"
                                         source={ongetimgProject(false, item.project_img)}
-                                    ></Image>
+                                    />
+
                                 )
                                 :
                                 (
                                     <Text style={[styles.h3, { color: '#8d99b2', }]}>no image avaliable</Text>
 
                                 )}
-                        </View>
+
+                        </TouchableOpacity>
                         <View style={[styles.blockcard, { flex: 1, backgroundColor: themes == 'light' ? colors.white : colors.font_dark }]}>
                             <View style={{ flex: 1, flexDirection: 'row', backgroundColor: themes == 'light' ? colors.white : colors.font_dark }}>
                                 <View style={{ flex: 3 }} >

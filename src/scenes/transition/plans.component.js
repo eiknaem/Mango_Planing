@@ -19,22 +19,13 @@ import { Ionicons, FontAwesome, Feather, AntDesign } from "@expo/vector-icons";
 import linq from "js-linq";
 import { styles, colors } from "../../stylesheet/styles";
 import { xt, getDataStorage, setDataStorage } from "../../api/service";
-import { apiAuth } from "../../api/authentication";
 import LoadingRows from "../../components/loadingRows";
 import NoRows from "../../components/noRows";
+import moment from 'moment';
 import { CheckViewPPN } from "../../components/variousRights";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { err } from "react-native-svg";
-import moment from "moment";
-import { isLoading } from "expo-font";
 
 export default function PlansScreen({ route, navigation }) {
-    // const abortController = new AbortController();
-    // const signal = abortController.signal
-
-    //console.log("navigation",route,navigation);
     const $linq = arr => new linq(arr);
-    // const theme = useTheme();
     const [lang, setLang] = useState({});
     const [dataServer, setDataServer] = useState(route.params.site);
     const [dataArr, setDataArr] = useState([]);
@@ -50,20 +41,28 @@ export default function PlansScreen({ route, navigation }) {
     const [isAbort, setAbort] = useState(false);
     const [updateTime, setUpdateTime] = useState(0);
     const [loadfile, setLoadfile] = useState(false);
+    const [isCountNoti, setCountNoti] = useState("");
 
-    // console.log("route.params", route.params);
     const { width, height } = Dimensions.get('window');
 
+    const Params = route.params;
+    const dataEMP = Params.dataEmp;
+    const getNoti = Params?.noti;
+    const isFrom = Params?.from;
+    const getManager = Params?.manager;
 
-    // const [isRefresh, setRefresh] = React.useState(false);
     useLayoutEffect(() => {
         navigation.setOptions({
-            // headerShown: global.startTutorial,
             headerLeft: () => headerLeft(),
-            // headerRight: () => <HeaderRight navigation={navigation} showIcon={true} showWarehouse={true} docList={getdocList} />,
             headerRight: () => headerRight()
         });
-    }, [route, loadfile]);
+    }, [route, isCountNoti, loadfile]);
+    useFocusEffect(
+        React.useCallback(() => {
+            getLangDF();
+            onloaddata();
+        }, [])
+    );
     const headerLeft = () => {
         let _dataStore = global?.DataStore?.store?.length || 0
         return (
@@ -75,10 +74,9 @@ export default function PlansScreen({ route, navigation }) {
                 </TouchableOpacity>
             </View>
         )
-    }
+    };
     const headerRight = () => {
         return (
-
             <View style={{ flexDirection: 'row', width: width * 0.2, height: height * 0.04, justifyContent: "center", alignItems: "center" }}>
                 <TouchableOpacity style={{ marginRight: '20%', justifyContent: "center", alignItems: "center" }}>
                     <FontAwesome name="search" size={18} color={themes == 'light' ? colors.black : colors.white} />
@@ -90,18 +88,7 @@ export default function PlansScreen({ route, navigation }) {
                 </TouchableOpacity>
             </View >
         )
-    }
-    useFocusEffect(
-        React.useCallback(() => {
-            getLangDF();
-            // onloadConfig();
-            onloadproject();
-            onReadNotification();
-            // onLoadAuth();
-
-        }, [])
-    );
-
+    };
     const getLangDF = async () => {
         let lang_ = await xt.getLang();
         setLang(lang_);
@@ -113,169 +100,160 @@ export default function PlansScreen({ route, navigation }) {
     const goBack = () => {
         navigation.navigate('Project');
     };
-    // const onloadConfig = async () => { //
-    //     var data = [];
-    //     try {
-    //         let res = await xt.getServer("Planning/Plan/ppn_config");
-    //         console.log("res onloadConfig", res);
-    //         data = res.config;
-    //         let decimalArr = data.filter(function (v) {
-    //             return v.code == "PPN_DECIMAL" && v.active == "Y";
-    //         });
-    //         if (decimalArr.length == 0) {
-    //             setDecimal(2);
-    //         } else {
-    //             let decimal_ = parseInt(decimalArr[0].value_data) || 2;
-    //             setDecimal(decimal_);
+    const onRefresh = async () => {
+        setDataStorage('searchTime', "");
+        setDataStorage('plansearchValue', "");
+        setDataStorage('statusValue', "inprogress,notstart,overdue,delay");
+        setDataStorage('planfilter', "Y");
+        onloaddata();
+    };
+    const onSearch = async () => {
+        navigation.navigate('Plansearch', {
+            routeNames: "Plansearch"
+        });
+        // abortController.abort();
+    };
+    const onloaddata = async () => {
 
-    //         }
-    //         global.decimal = decimal;
-    //         // set date alert
-    //         setAlertDateType({
-    //             start: $linq(res.data).where(x => x.alertcode == "AT003").select(x => x.alertdate).firstOrDefault() || 0,
-    //             end: $linq(res.data).where(x => x.alertcode == "AT001").select(x => x.alertdate).firstOrDefault() || 0,
-    //             deadline: $linq(res.data).where(x => x.alertcode == "AT002").select(x => x.alertdate).firstOrDefault() || 0
-    //         });
-    //     } catch (err) {
-    //         setDecimal(2);
-    //     };
-
-    // };
-    const onloadproject = async () => {
-
-        var Projectfilter_ = (await getDataStorage("Projectfilter")) || "Y";
+        var planfilter_ = await getDataStorage("planfilter") || "Y";
         var usertype_ = await getDataStorage("usertype");
-        console.log("usertype_ project: ", usertype_);
+        console.log("usertype_ plan: ", usertype_);
         setUsertype(usertype_)
-        console.log("Projectfilter_", Projectfilter_);
 
-        if (Projectfilter_ == "N") {
+        if (planfilter_ == "N") {
             setDataemty(false);
             setDataloadding(false);
-            setDataStorage("Projectfilter", "Y");
+            setDataStorage('planfilter', "Y");
         } else {
-
             setDataemty(true);
             setDataArr([]);
-            setDataloadding(true);
+            setDataloadding(true)
         }
+        var searchValue_ = await getDataStorage("plansearchValue") || "";
+        var statusValue_ = await getDataStorage("statusValue") || "";
+        var searchTime_ = await getDataStorage("searchTime") || "";
+        console.log("get searchTime_ --- >", searchTime_);
 
-        var searchValue_ = (await getDataStorage("ProjectsearchValue")) || "";
-        var dataServer = await getDataStorage("sitevalue_key");
-        setDataServer(dataServer);
-
-        var data = [];
-
-        try {
-            if (usertype_ == "Employee") {
-                console.log("usertype_ Employee123131: ");
-
-                let viewPPN = await CheckViewPPN();
-                console.log("viewPPN: ", viewPPN);
-                console.log("fromAuth Project Page: ", await AsyncStorage.getItem("fromAuth"));
-
-
-                if (viewPPN == "Y") { // เปิด view ppn
-                    let res = await xt.getServer("/Planning/Planning/Planning_project_web")
-                    console.log("res: ", res);
-                    data = res.data || [];
-
-                } else if (viewPPN == "N") { // ปิด view ppn
-                    let res = await xt.getServer("Planning/Plan/app_project_list");
-                    console.log("res noview ppn: ", res);
-                    data = res.plan_auth || [];
-
-
-                }
-                console.log("datadata: ", data);
-                console.log("ขนาด: ", data.length);
-                setViewPPN(viewPPN)
-            } else if (usertype_ == "Outsource") {
-                let res = await xt.getServer("Planning/Plan/app_project_list");
-                console.log("res noview ppn: ", res);
-                data = res.plan_auth || [];
-            }
-        } catch (error) {
-            if (err?.response?.status == 404) {
-                let res = await xt.getServer('Planning/Planning/Planning_project');
-                data = res.data || [];
-            }
-        }
-
-
-
-        data.forEach((v, i) => {
-            v.startdate = moment(v.j_start || v.startdate).format("DD/MM/YYYY");
-            v.enddate = moment(v.j_end || v.enddate).format("DD/MM/YYYY");
-            v.pathpic = v.pathpic || v.pm || null;
-            v.project_img = v.project_img || null;
-            v.pre_des = v.pre_des || v.project || null;
-            v.progress_per = v.progress_per;
-        });
-        console.log("data", data);
-        onFilter(data, searchValue_);
-    };
-    const onFilter = async (data_, searchValue_) => {
+        setSeachTime(!xt.isEmpty(searchTime_) ? JSON.parse(searchTime_) : "");
         setSeachValue(searchValue_);
-        if (searchValue_) {
-            const filterdata = data_.filter(function filter(c) {
-                return (
-                    searchValue_ === "" ||
-                    c.pre_des.toLowerCase().includes(searchValue_.toLowerCase())
-                );
+
+        var data_ = [];
+        var testplan = [];
+
+        // Set api use version
+        try { // For New Api Version
+            let url = `/Planning/Planning/CalculateProject?pre_event=${route.params.pre_event}`;
+            var res = await xt.getServer(url);
+            console.log(res, 'resresresresresresresresresresresresresresres');
+            if (usertype_ == "Employee") {
+                let viewPPN = await CheckViewPPN();
+                setViewPPN(viewPPN)
+            }
+
+            data_ = $linq(res.data.data_array).select(y => {
+                let dataMain = $linq(y.value).where(da => da.taskid == "MAIN1234567890").firstOrDefault();
+
+                return dataMain;
+            }
+            ).toArray();
+
+            data_ = $linq(data_).orderByDescending(o => o.add_dt || null).toArray();
+            console.log(data_, "data_");
+
+            testplan = $linq(data_).where(y => (y.pn_active == "Y" || y.pn_active == null) && y.revise_status == "N").toArray();
+
+            testplan.forEach(async (v, i) => {
+                v.status = xt.getStatus2(v.status);
+                v.start_date_show = moment(v.start_date2).format('DD/MM/YYYY');
+                v.end_date_show = moment(v.end_date2).format('DD/MM/YYYY');
             });
 
-            if (filterdata.length != 0) {
-                setDataemty(false);
-            } else {
-                setDataemty(true);
+            console.log("testplan ----------------------------->", testplan);
+            console.log("===================================== Plans use api new version =====================================");
+
+        } catch (error) { // For old api Version
+
+            if (usertype_ == "Employee") {
+                let viewPPN = await CheckViewPPN();
+                let url = "/Planning/Plan/app_plan_list3?pre_event=" + route.params.pre_event
+                var res = await xt.getServer(url);
+                // console.log("res v3", res);
+                data_ = res.plan_auth || res.data;
+                data_ = $linq(data_).orderByDescending(o => o.add_dt || null).toArray();
+                testplan = $linq(data_).where(y => (y.pn_active == "Y" || y.pn_active == null) && y.revise_status == "N").toArray()
+
+                setViewPPN(viewPPN)
+            } else if (usertype_ == "Outsource") {
+                // let url = "Planning/Plan/app_plan_list3?pre_event=" + route.params.pre_event
+                let url = "/Planning/Plan/app_plan_list?pre_event=" + route.params.pre_event
+                var res = await xt.getServer(url);
+                console.log("res plan no view ppn: ", res);
+                data_ = res.plan_auth || res.data;
+                data_ = $linq(data_).orderByDescending(o => o.add_dt || null).toArray();
+                testplan = $linq(data_).where(y => (y.pn_active == "Y" || y.pn_active == null) && y.revise_status == "N").toArray()
             }
-            setDataArr(filterdata);
-        } else {
-            setDataArr(data_);
-            if (data_.length != 0) {
-                setDataemty(false);
-            } else {
-                setDataemty(true);
-            }
+
+            testplan.forEach(async (v, i) => {
+                v.status = xt.getStatus2(v.status);
+                v.start_date_show = moment(v.start_date2).format('DD/MM/YYYY');
+                v.end_date_show = moment(v.end_date2).format('DD/MM/YYYY');
+            });
+
+            let urlAction = `/Planning/plan/app_plan_data3?pre_event=${route.params.pre_event}&plan_code=`;
+            let rsp = await xt.getServer(urlAction);
+            console.log("rsp api: ", rsp);
+
+            testplan.forEach(obj => {
+                let matchingRspObj = rsp.plan_data.find(rspObj => rspObj.plan_code === obj.plan_code);
+                console.log("matchingRspObj : ", matchingRspObj);
+
+                if (matchingRspObj) {
+                    if (usertype == "Employee") {
+                        Object.assign(obj, {
+                            end_date: matchingRspObj.end_date,
+                            start_date: matchingRspObj.start_date,
+                            pv: matchingRspObj.pv,
+                            total_amt: matchingRspObj.contract_amt,
+                            plan_per: (matchingRspObj.pv_per >= 99.9999) ? xt.roundPlanPer(matchingRspObj.pv_per, route.params.decimal || global.decimal) : matchingRspObj.pv_per, //matchingRspObj.pv_per,
+                            progress_per: matchingRspObj.progress_per,
+                            ev_perB: matchingRspObj.progress_per_b,
+                            status: xt.getStatus2(matchingRspObj.status)
+                        });
+                    } else {
+                        Object.assign(obj, {
+                            end_date: matchingRspObj.end_date,
+                            start_date: matchingRspObj.start_date,
+                            pv: matchingRspObj.pv,
+                            total_amt: matchingRspObj.contract_amt,
+                            plan_per: (matchingRspObj.pv_per >= 99.9999) ? xt.roundPlanPer(matchingRspObj.pv_per, route.params.decimal || global.decimal) : matchingRspObj.pv_per, //matchingRspObj.pv_per,
+                            progress_per: matchingRspObj.progress_per,
+                            ev_perB: matchingRspObj.progress_per_b,
+                            status: xt.getStatus2(matchingRspObj.status)
+                        });
+                    }
+
+                }
+            });
+
+            console.log("===================================== Plans use api old version =====================================");
         }
-        setDataloadding(false);
-    };
-    const onReadNotification = async () => {
-        try {
-            setLoadfile(true)
-            // let res2 = await xt.getServer(`Planning/Planning/Planning_Noti_showAll`);
-            let res2 = await xt.showAllNoti();
-            console.log(res2, "allNotiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii");
-            // console.log(res2.length, "count");
-            let cleanData = $linq(res2).where(x => x.read_timestamp == null || x.count_d > 0 || x.count_e > 0 || x.count_s > 0).toArray();
-            console.log(cleanData, "res noti:==============================================================:==============================================================:============================================================== ");
 
-            setCountNoti(cleanData.length); // CountNoti
-            setDataNoti(cleanData); // ShowAllNoti
-            console.log("set");
+        // data_ = res.data_array;
 
-        } catch (error) {
-            console.log("catch noti: ", error);
-            setLoadfile(false)
-        } finally {
-            setLoadfile(false)
+        // testplan.forEach(async (v, i) => {
+        //   v.status = xt.getStatus2(v.status);
+        //   v.start_date_show = moment(v.start_date2).format('DD/MM/YYYY');
+        //   v.end_date_show = moment(v.end_date2).format('DD/MM/YYYY'); 
+        // });
+        console.log("datass_", testplan);
+        // console.log("data_", $linq(data_).where(x => x.planname == "test 03/03 v1"));
 
-        }
-
+        setDataArr(testplan)
+        setDataemty(false);
+        setDataloadding(false)
+        // onFilter(testplan, searchValue_, statusValue_, searchTime_)
+        loadPlanData(testplan, searchValue_, statusValue_, searchTime_);
     }
-    // const onLoadAuth = async () => {
-    //     let server_data = (await apiAuth.getAuth()).data;
-    //     let auth = server_data.auth;
-    //     console.log("auth: ", auth);
-    //     setAuth(auth)
-    // }
-    const onRefresh = async () => {
-        setDataStorage("ProjectsearchValue", "");
-        setDataStorage("Projectfilter", "Y");
-        onloadproject();
-        onReadNotification();
-    };
     const renderItem = ({ item, index }) => {
         console.log("item", item);
         return (
@@ -283,8 +261,8 @@ export default function PlansScreen({ route, navigation }) {
                 <View style={[styles.blockcard, { flex: 1, top: '5%', width: '100%', backgroundColor: themes == 'light' ? colors.white : colors.font_dark }]}>
                     {/* Body */}
                     <View style={{ flex: 2, flexDirection: 'row', }}>
-                        <View style={{ flex: 1 }}>
-                            <Text style={[styles.h4, { marginLeft: 5, fontSize: 14, color: themes == 'light' ? colors.black : colors.white }]}>Plan name : </Text>
+                        <View style={{ flex: 3, }}>
+                            <Text style={[styles.h4, { marginLeft: 5, fontSize: 14, color: themes == 'light' ? colors.black : colors.white }]}>Plan name :{item.planname} </Text>
                         </View>
                         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'flex-end', paddingEnd: 20 }}>
                             <Text style={[styles.h5_bold, { backgroundColor: colors.red, width: 100, height: 20, borderRadius: 5, marginLeft: 5, fontSize: 12, textAlign: 'center', color: themes == 'light' ? colors.black : colors.white }]}>Overdue</Text>
@@ -292,36 +270,158 @@ export default function PlansScreen({ route, navigation }) {
                     </View>
                     <View style={{ flex: 2, flexDirection: 'row' }}>
                         <View style={{ flex: 1 }}>
-                            <Text style={[styles.h5, { marginLeft: 5, fontSize: 12, color: themes == 'light' ? colors.black : colors.white }]}>PL :</Text>
+                            <Text style={[styles.h5,
+                            { marginLeft: 5, fontSize: 12, color: themes == 'light' ? colors.black : colors.white }]}>PL :  <Text style={[styles.h5_bold, { color: colors.greentree, fontSize: 14, }]}>
+                                    {Number.isInteger(item.plan_per)
+                                        ? item.plan_per
+                                        : Number(xt.dec(item.plan_per, 2)).toFixed(route.params.decimal || global.decimal)} %
+                                </Text>
+                            </Text>
                         </View>
                         <View style={{ flex: 1 }}>
-                            <Text style={[styles.h5, { marginLeft: 5, fontSize: 12, color: themes == 'light' ? colors.black : colors.white }]}>PG :</Text>
+                            <Text style={[styles.h5,
+                            { marginLeft: 5, fontSize: 12, color: themes == 'light' ? colors.black : colors.white }]}>PG : <Text style={[styles.h5_bold, { color: colors.red, fontSize: 14, }]}>
+                                    {Number.isInteger(item.progress_per)
+                                        ? item.progress_per
+                                        : Number(xt.dec(item.progress_per, 2)).toFixed(route.params.decimal || global.decimal)} %
+                                </Text>
+                            </Text>
                         </View>
                     </View>
-                    <View style={{ marginTop: 10, flex: 6, flexDirection: 'row', backgroundColor: themes == 'light' ? colors.white : colors.font_dark }}>
-                        <View style={{ flex: 5, flexDirection: 'row', alignItems: 'center' }}>
+                    <View style={{ flex: 4, marginTop: 10, flex: 6, flexDirection: 'row', backgroundColor: themes == 'light' ? colors.white : colors.font_dark }}>
+                        <View style={{ flex: 4, flexDirection: 'row', alignItems: 'center' }}>
                             <View style={{ width: 30, height: 30, backgroundColor: 'lime', borderRadius: 30, }}>
                             </View>
                         </View>
-                        <View style={{ flex: 5, flexDirection: 'row', }}>
+                        <View style={{ flex: 6, flexDirection: 'row', }}>
                             <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'center' }}>
                                 <View style={{ flex: 4, alignItems: 'center' }}>
                                     <Text style={[styles.h5, { marginLeft: 5, fontSize: 12, color: themes == 'light' ? colors.black : colors.white }]}>{lang.start_date}</Text>
-                                    <Text style={[styles.h5, { marginLeft: 5, fontSize: 12, color: themes == 'light' ? colors.black : colors.white }]}>{item.startdate}</Text>
+                                    <Text style={[styles.h5, { marginLeft: 5, fontSize: 12, color: themes == 'light' ? colors.black : colors.white }]}>{item.start_date_show}</Text>
                                 </View>
                                 <View style={{ flex: 4, alignItems: 'center' }}>
                                     <Text style={[styles.h5, { marginLeft: 5, fontSize: 12, color: themes == 'light' ? colors.black : colors.white }]}>{lang.emd_date}</Text>
-                                    <Text style={[styles.h5, { marginLeft: 5, fontSize: 12, color: themes == 'light' ? colors.black : colors.white }]}>{item.enddate}</Text>
+                                    <Text style={[styles.h5, { marginLeft: 5, fontSize: 12, color: themes == 'light' ? colors.black : colors.white }]}>{item.end_date_show}</Text>
                                 </View>
-                                <View style={{ flex: 2, alignItems: 'center' }}>
+                                <TouchableOpacity style={{ flex: 2, alignItems: 'center' }}>
                                     <Feather name="paperclip" size={20} color="#8d99b2" />
-                                </View>
+                                    <View style={{ width: width * 0.05, height: height * 0.025, position: "absolute", backgroundColor: colors.black, right: width * -0.001, top: "30%", borderRadius: 20, alignItems: "center", justifyContent: "center" }}>
+                                        {loadfile
+                                            ? <ActivityIndicator size={12} color={"#fff"} />
+                                            : (<Text style={[styles.h5_bold, { color: colors.white, fontSize: 10, marginLeft: 3 }]}>{"99+"} </Text>)}
+                                        {/* <ActivityIndicator size={12} color={"#fff"} /> */}
+                                    </View>
+                                </TouchableOpacity>
                             </View>
                         </View>
                     </View>
                 </View >
             </>
         );
+    };
+    const loadPlanData = async (fetchData, searchValue_, statusValue_, searchTime_) => {
+        console.log("fetchData: ", fetchData);
+        try {
+            console.log("Updated fetchData: ", fetchData);
+            // setDataArr([...fetchData]);
+            onFilter(fetchData, searchValue_, statusValue_, searchTime_)
+
+        } catch (error) {
+            console.log("error: ", error);
+        }
+    };
+    const onFilter = async (data_, searchValue, statusValue, searchTime_) => {
+        console.log("data onL ", data_.length);
+        console.log("searchTime_searchTime_: ", searchTime_);
+
+        if (searchTime_ != "") {
+            console.log("กรอง วัน");
+            const _searchTime = JSON.parse(searchTime_);
+            console.log("searchTime ==================>", _searchTime);
+            data_ = $linq(data_).where(w =>
+                (moment(w?.start_date).format("YYYYMMDD") >= moment(_searchTime.time_start).format("YYYYMMDD") &&
+                    moment(w?.start_date).format("YYYYMMDD") <= moment(_searchTime.time_end).format("YYYYMMDD")) ||
+                (moment(_searchTime.time_start).format("YYYYMMDD") >= moment(w?.start_date).format("YYYYMMDD") &&
+                    moment(_searchTime.time_start).format("YYYYMMDD") <= moment(w?.end_date).format("YYYYMMDD"))).toArray();
+
+            console.log("data_ search date: ", data_);
+
+        }
+        const status_split = (statusValue == "") ? [] : statusValue.split(",");
+        setStatusValue(status_split);
+        if (searchValue || status_split.length != 0) {
+            const filterdata = data_.filter(item => status_split.includes(item.status)).filter(function filter(c) {
+                return (
+                    searchValue === '' ||
+                    c.planname.toLowerCase().includes(searchValue.toLowerCase())
+                );
+            });
+            if (filterdata.length != 0) {
+                setDataemty(false);
+            } else {
+                setDataemty(true);
+            }
+            // loadPlanData(filterdata);
+            setDataArr(filterdata);
+        } else {
+            // loadPlanData(data_);
+            setDataArr(data_);
+            if (data_.length != 0) {
+                setDataemty(false);
+            } else {
+                setDataemty(true);
+            }
+        }
+        setDataloadding(false)
+
+    };
+    const onAttachfilePress = (item) => {
+        console.log("itemplan onAttachfilePress: ", item);
+        if (isViewPPN == "Y") {
+            navigation.navigate("Attachfile", {
+                site: dataServer,
+                pre_event2: item.pre_event2,
+                pre_event: item.pre_event,
+                plan_code: item.plan_code,
+                taskid: item.taskid,
+                from: "plan",
+                manager: item.owner,
+                skill: (item.IsOwnPlan == "Y") ? "Normal" : "JustWatch"
+            });
+        } else {
+            navigation.navigate("Attachfile", {
+                site: dataServer,
+                pre_event2: item.pre_event2,
+                pre_event: item.pre_event,
+                plan_code: item.plan_code,
+                taskid: item.taskid,
+                from: "plan",
+                manager: item.owner,
+                skill: "Normal"
+            });
+        }
+    };
+    const onAssignList = (item) => {
+        navigation.navigate("EmployeeList", {
+            site: dataServer,
+            dataEmp: item,
+            skill: "Normal",
+        });
+    };
+    const onItemPress = (item) => {
+        setDataStorage('TasksearchTime', "");
+        setDataStorage('tasksearchValue', "");
+        setDataStorage('taskstatusValue', "inprogress,notstart,delay,overdue");
+        console.log('itemitem plan: ', item);
+        navigation.navigate('Tasks', {
+            site: dataServer,
+            pre_event2: item.pre_event2,
+            pre_event: item.pre_event,
+            plan_code: item.plan_code,
+            decimal: route.params.decimal,
+            managerplan: item.owner,
+            viewppn: isViewPPN
+        });
     };
     return (
         < View style={{ flex: 1, backgroundColor: themes == 'light' ? colors.white : colors.back_bg, padding: 10 }} >
@@ -345,11 +445,11 @@ export default function PlansScreen({ route, navigation }) {
                             </TouchableOpacity>
                         </View>
                     </View>
-                    <View style={{ top: '1%' }}>
+                    <View style={{ top: '1%', paddingBottom: '5%' }}>
                         <FlatList
                             data={dataArr}
                             renderItem={renderItem}
-                            initialNumToRender={10}
+                            initialNumToRender={5}
                             maxToRenderPerBatch={5}
                             windowSize={10}
                         />
