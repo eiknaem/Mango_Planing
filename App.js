@@ -48,7 +48,7 @@ Notifications.setNotificationHandler({
   }),
 });
 const Stack = createStackNavigator();
-export default function App({ navigation }) {
+export default function App({ }) {
   let [fontsLoaded] = useFonts({
     Prompt_300Light,
     Inter_300Light,
@@ -62,6 +62,7 @@ export default function App({ navigation }) {
   const [notification, setNotification] = useState(false);
   const [lang, setLang] = useState({});
   const [themes, setthemes] = useState("");
+
   useEffect(() => {
     const fetchData = async () => {
       getLangDF();

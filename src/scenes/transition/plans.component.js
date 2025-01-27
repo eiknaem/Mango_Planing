@@ -53,14 +53,25 @@ export default function PlansScreen({ route, navigation }) {
 
     useLayoutEffect(() => {
         navigation.setOptions({
+            headerStyle: {
+                backgroundColor: themes === 'light' ? colors.white : colors.back_bg,
+                shadowColor: "transparent",
+                elevation: 0,
+            },
+            headerTitleAlign: "center",
+            headerTitleStyle: {
+                fontWeight: "bold",
+            },
+            headerTintColor: themes === 'light' ? colors.black : colors.white, // แก้ไขตรงนี้
             headerLeft: () => headerLeft(),
             headerRight: () => headerRight()
         });
-    }, [route, isCountNoti, loadfile]);
+    }, [route, isCountNoti, loadfile, themes, colors]);
     useFocusEffect(
         React.useCallback(() => {
             getLangDF();
             onloaddata();
+
         }, [])
     );
     const headerLeft = () => {

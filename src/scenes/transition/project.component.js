@@ -60,12 +60,22 @@ export default function ProjectScreen({ route, navigation }) {
     // const [isRefresh, setRefresh] = React.useState(false);
     useLayoutEffect(() => {
         navigation.setOptions({
+            headerStyle: {
+                backgroundColor: themes === 'light' ? colors.white : colors.back_bg,
+                shadowColor: "transparent",
+                elevation: 0,
+            },
+            headerTitleAlign: "center",
+            headerTitleStyle: {
+                fontWeight: "bold",
+            },
+            headerTintColor: themes === 'light' ? colors.black : colors.white, // แก้ไขตรงนี้
             // headerShown: global.startTutorial,
             headerLeft: () => headerLeft(),
             // headerRight: () => <HeaderRight navigation={navigation} showIcon={true} showWarehouse={true} docList={getdocList} />,
             headerRight: () => headerRight()
         });
-    }, [route, isCountNoti, loadfile, isShowMenu]);
+    }, [route, isCountNoti, loadfile, isShowMenu, themes, colors]);
     const headerLeft = () => {
         let _dataStore = global?.DataStore?.store?.length || 0
         return (
