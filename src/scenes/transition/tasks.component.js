@@ -1163,24 +1163,29 @@ export default function TasksScreen({ route, navigation }) {
                         </View>
                     </View>
                     <View style={{ flex: 2, flexDirection: 'row' }}>
-                        <View style={{ flex: 1 }}>
+                        <View style={{ flex: 4 }}>
                             <Text style={[styles.h5,
                             { marginLeft: 5, fontSize: 12, color: themes == 'light' ? colors.black : colors.white }]}>PL :  <Text style={[styles.h5_bold, { color: colors.greentree, fontSize: 14, }]}>
-                                    {Number.isInteger(item.plan_per)
+                                    {/* {Number.isInteger(item.plan_per)
                                         ? item.plan_per
-                                        : Number(xt.dec(item.plan_per, 2)).toFixed(route.params.decimal || global.decimal)} %
+                                        : Number(xt.dec(item.plan_per, 2)).toFixed(route.params.decimal || global.decimal)} % */}
+                                    {Number(xt.dec(item.plan_per, 2)).toFixed(route.params.decimal || global.decimal)} %
                                 </Text>
                             </Text>
                         </View>
-                        <View style={{ flex: 1 }}>
+                        <View style={{ flex: 4 }}>
                             <Text style={[styles.h5,
                             { marginLeft: 5, fontSize: 12, color: themes == 'light' ? colors.black : colors.white }]}>PG : <Text style={[styles.h5_bold, { color: colors.red, fontSize: 14, }]}>
-                                    {Number.isInteger(item.progress_per)
+                                    {/* {Number.isInteger(item.progress_per)
                                         ? item.progress_per
-                                        : Number(xt.dec(item.progress_per, 2)).toFixed(route.params.decimal || global.decimal)} %
+                                        : Number(xt.dec(item.progress_per, 2)).toFixed(route.params.decimal || global.decimal)} % */}
+                                    {Number(xt.dec(item.progress_per, 2)).toFixed(route.params.decimal || global.decimal)} %
                                 </Text>
                             </Text>
                         </View>
+                        <TouchableOpacity style={{ flex: 1, alignItems: 'center', }}>
+                            <FontAwesome name="commenting-o" size={24} color="#8d99b2" />
+                        </TouchableOpacity>
                     </View>
                     <View style={{ flex: 4, marginTop: 10, flex: 6, flexDirection: 'row', backgroundColor: themes == 'light' ? colors.white : colors.font_dark }}>
                         <View style={{ flex: 4, flexDirection: 'row', alignItems: 'center' }}>
