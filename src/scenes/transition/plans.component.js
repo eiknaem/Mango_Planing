@@ -272,14 +272,16 @@ export default function PlansScreen({ route, navigation }) {
         console.log("item", item);
         return (
             <>
-                <View style={[styles.blockcard, { flex: 1, top: '5%', width: '100%', backgroundColor: themes == 'light' ? colors.white : colors.font_dark }]}>
+                <TouchableOpacity style={[styles.blockcard, { flex: 1, top: '5%', width: '100%', backgroundColor: themes == 'light' ? colors.white : colors.font_dark }]}
+                    onPress={() => onItemPress(item)} 
+                >
                     {/* Body */}
                     <View style={{ flex: 2, flexDirection: 'row', }}>
                         <View style={{ flex: 3, }}>
-                            <Text style={[styles.h4, { marginLeft: 5, fontSize: 14, color: themes == 'light' ? colors.black : colors.white }]}>Plan name :{item.planname} </Text>
+                            <Text style={[styles.h4, { marginLeft: 5, fontSize: 14, color: themes == 'light' ? colors.black : colors.white }]}>{lang.planname} : {item.planname} </Text>
                         </View>
                         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'flex-end', paddingEnd: 20 }}>
-                            <Text style={[styles.h5_bold, { backgroundColor: colors.red, width: 100, height: 20, borderRadius: 5, marginLeft: 5, fontSize: 12, textAlign: 'center', color: themes == 'light' ? colors.black : colors.white }]}>Overdue</Text>
+                            <Text style={[styles.h5_bold, { backgroundColor: colors.red, width: 90, height: 25, borderRadius: 5, marginLeft: 5, fontSize: 14, textAlign: 'center', color: themes == 'light' ? colors.black : colors.white }]}>Overdue</Text>
                         </View>
                     </View>
                     <View style={{ flex: 2, flexDirection: 'row' }}>
@@ -329,7 +331,7 @@ export default function PlansScreen({ route, navigation }) {
                             </View>
                         </View>
                     </View>
-                </View >
+                </TouchableOpacity >
             </>
         );
     };

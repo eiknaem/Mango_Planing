@@ -36,6 +36,7 @@ import HeaderLeft from "./src/components/headerLeft";
 import ProjectScreen from "./src/scenes/transition/project.component";
 import PlansScreen from "./src/scenes/transition/plans.component";
 import SearchScreen from "./src/scenes/transition/search.component";
+import TasksScreen from "./src/scenes/transition/tasks.component"
 // transitons
 import HomeLayout from "./src/template/home_layout";
 import SettingScreen from "./src/scenes/transition/setting.component";
@@ -236,6 +237,14 @@ export default function App({ }) {
     )
   }
 
+  const renderTasks = () => {
+    return (
+      <>
+        <Stack.Screen name='Tasks' component={TasksScreen} />
+      </>
+    )
+  }
+
   return (
     <ApplicationProvider
       {...eva}
@@ -272,6 +281,7 @@ export default function App({ }) {
                   {renderProject()}
                   {renderPlan()}
                   {renderSearch()}
+                  {renderTasks()}
                 </Stack.Navigator>
                 <UpdateVersion />
               </>
