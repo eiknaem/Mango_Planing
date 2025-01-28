@@ -147,7 +147,9 @@ var langArr = {
     noti_task_end: "คุณมีกำหนดสิ้นสุดงานในอีก",
     noti_task_deadLine: "คุณมีกำหนด Deadline ในอีก",
     session_expire: "เซสชันของคุณหมดอายุแล้ว!",
-    please_select_type: "กรุณาเลือก ประเภทผู้ใช้งาน"
+    please_select_type: "กรุณาเลือก ประเภทผู้ใช้งาน",
+    search_history: "ประวัติการค้นหาล่าสุด", 
+    clear_history: "ล้างทั้งหมด",
   },
   "EN": {
     lang_wh: "en-US",
@@ -298,7 +300,10 @@ var langArr = {
     noti_task_end: "You have a task ending in",
     noti_task_deadLine: "You have a deadline in",
     session_expire: "Your session has expired!",
-    please_select_type: "Please Select User Type."
+    please_select_type: "Please Select User Type.",
+    search_history: "Search History",
+    clear_history: "Clear All",
+
   }
 }
 

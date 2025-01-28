@@ -1,16 +1,26 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useLayoutEffect } from 'react';
 import { View, Text, StyleSheet, TextInput, ScrollView, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { color } from './../../stylesheet/colors';
 import { font } from './../../stylesheet/fonts';
-import { getDataStorage, setDataStorage } from '../../api/service';
+import { xt, getDataStorage, setDataStorage } from '../../api/service';
 
 
 export default function SearchScreen({ route, navigation }) {
     const [searchValue, setSearchValue] = useState('');
     const [searchHistory, setSearchHistory] = useState([]);
+    const [themes, setThemes] = useState('');
+    const [lang, setLang] = useState({});
 
+    const loadTheme = async () => {
+        const themes_key = await getDataStorage("themes_ppn") || "light";
+        setThemes(themes_key);
+    };
 
+    const getLangDF = async () => {
+        let lang_ = await xt.getLang();
+        setLang(lang_);
+    };
 
     const getSearchHistory = async () => {
         try {
@@ -23,25 +33,39 @@ export default function SearchScreen({ route, navigation }) {
         }
     };
 
-
     const handleSearch = async (value) => {
-        // ใช้ค่าที่ส่งมาถ้ามี ถ้าไม่มีใช้ค่าจาก state
+
         const searchText = value || searchValue;
 
         if (searchText.trim()) {
             const routeName = route.params?.routeName;
 
             // บันทึกค่าค้นหา
-            if (routeName === 'Project') {
-                await setDataStorage("ProjectsearchValue", searchText);
-            } else if (routeName === 'Plans') {
-                await setDataStorage("plansearchValue", searchText);
+            // if (routeName === 'Project') {
+            //     await setDataStorage("ProjectsearchValue", searchText);
+            // } else if (routeName === 'Plans') {
+            //     await setDataStorage("plansearchValue", searchText);
+            // }
+            switch (routeName) {
+                case 'Project':
+                    await setDataStorage("ProjectsearchValue", searchText);
+                    break;
+                case 'Plans':
+                    await setDataStorage("plansearchValue", searchText);
+                    break;
+                case 'Tasks':
+                    await setDataStorage("tasksearchValue", searchText);
+                    // console.log('Task Search');
+                    break
+                default:
+                    break;
             }
 
             // บันทึกประวัติ
             const newHistory = [searchText, ...searchHistory.filter(h => h !== searchText)];
             setSearchHistory(newHistory);
             await setDataStorage(`${routeName}_history`, JSON.stringify(newHistory));
+
 
             navigation.goBack();
         }
@@ -53,35 +77,81 @@ export default function SearchScreen({ route, navigation }) {
         await setDataStorage(`${routeName}_history`, JSON.stringify([]));
     }
 
+    useLayoutEffect(() => {
+        navigation.setOptions({
+            headerStyle: {
+                backgroundColor: themes === 'light' ? color.white : color.back_bg,
+                shadowColor: "transparent",
+                elevation: 0,
+            },
+            headerTitleAlign: "center",
+            headerTitleStyle: {
+                fontWeight: "bold",
+            },
+            headerTintColor: themes === 'light' ? color.black : color.white,
+            headerLeft: () => (
+                <TouchableOpacity 
+                    style={{ marginLeft: 15 }}
+                    onPress={() => navigation.goBack()}
+                >
+                    <Ionicons 
+                        name="arrow-back" 
+                        size={24} 
+                        color={themes === 'light' ? color.black : color.white} 
+                    />
+                </TouchableOpacity>
+            ),
+        });
+    }, [themes]);
+    
     useEffect(() => {
+        getLangDF();
+        loadTheme();
+        getSearchHistory();
         // const routeName = route.params?.routeName;
         // console.log('routeName :', routeName);
-        getSearchHistory();
     }, []);
 
     return (
-        <View style={styles.container}>
+        <View style={[styles.container, {
+            backgroundColor: themes === 'light' ? color.white : color.back_bg
+        }]}>
             <View style={styles.searchContainer}>
-                <View style={styles.searchBox}>
-                    <Ionicons name="search" size={20} color={color.grey_t} style={styles.searchIcon} />
+                <View style={[styles.searchBox, {
+                    backgroundColor: themes === 'light' ? color.white : color.font_dark,
+                    borderColor: themes === 'light' ? color.border2 : color.image_light,
+                }]}>
+                    <Ionicons
+                        name="search"
+                        size={20}
+                        color={themes === 'light' ? color.grey_t : color.white}
+                        style={styles.searchIcon}
+                    />
                     <TextInput
-                        style={styles.input}
-                        placeholder="ค้นหา..."
+                        style={[styles.input, {
+                            color: themes === 'light' ? color.black : color.white
+                        }]}
+                        placeholder={lang.search}
+                        placeholderTextColor={themes === 'light' ? color.grey_t : color.white}
                         value={searchValue}
                         onChangeText={setSearchValue}
                         returnKeyType="search"
-                        onSubmitEditing={() => handleSearch()} 
+                        onSubmitEditing={() => handleSearch()}
                     />
                 </View>
             </View>
 
             <ScrollView style={styles.content}>
-                {/* ประวัติการค้นหาล่าสุด */}
-                <View style={styles.section}>
+                <View style={[styles.section, {
+                    backgroundColor: themes === 'light' ? color.white : color.back_bg
+                }]}>
                     <View style={styles.sectionHeader}>
-                        <Text style={[font.h4_bold]}>ประวัติการค้นหาล่าสุด</Text>
+                        <Text style={[
+                            font.h4_bold,
+                            { color: themes === 'light' ? color.black : color.white }
+                        ]}>{lang.search_history}</Text>
                         <TouchableOpacity onPress={() => { clearHistory() }}>
-                            <Text style={[font.h5, styles.clearButton]}>ล้างทั้งหมด</Text>
+                            <Text style={[font.h5, styles.clearButton]}>{lang.clear_history}</Text>
                         </TouchableOpacity>
                     </View>
 
@@ -89,12 +159,15 @@ export default function SearchScreen({ route, navigation }) {
                         {searchHistory.map((item, index) => (
                             <TouchableOpacity
                                 key={index}
-                                style={styles.historyItem}
-                                onPress={() => {
-                                    handleSearch(item);
-                                }}
+                                style={[styles.historyItem, {
+                                    backgroundColor: themes === 'light' ? color.white : color.font_dark,
+                                    borderColor: themes === 'light' ? color.border2 : color.image_light,
+                                }]}
+                                onPress={() => handleSearch(item)}
                             >
-                                <Text style={styles.historyText}>{item}</Text>
+                                <Text style={[styles.historyText, {
+                                    color: themes === 'light' ? color.grey_t : color.white
+                                }]}>{item}</Text>
                             </TouchableOpacity>
                         ))}
                     </View>

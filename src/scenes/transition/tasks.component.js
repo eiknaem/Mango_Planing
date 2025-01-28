@@ -111,7 +111,9 @@ export default function TasksScreen({ route, navigation }) {
     const headerRight = () => {
         return (
             <View style={{ flexDirection: 'row', width: width * 0.2, height: height * 0.04, justifyContent: "center", alignItems: "center" }}>
-                <TouchableOpacity style={{ marginRight: '20%', justifyContent: "center", alignItems: "center" }}>
+                <TouchableOpacity style={{ marginRight: '20%', justifyContent: "center", alignItems: "center" }}
+                    onPress={() => navigation.navigate("Search", { routeName: "Tasks" })}
+                >
                     <FontAwesome name="search" size={18} color={themes == 'light' ? colors.black : colors.white} />
                 </TouchableOpacity>
 
@@ -496,7 +498,7 @@ export default function TasksScreen({ route, navigation }) {
                 .filter(function filter(c) {
                     return (
                         searchValue === "" ||
-                        c.taskname.toLowerCase().includes(searchValue.toLowerCase())
+                        c.taskname.toLowerCase().startsWith(searchValue.toLowerCase())
                     );
                 });
             if (filterdata.length != 0) {
