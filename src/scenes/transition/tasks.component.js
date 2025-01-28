@@ -1154,7 +1154,9 @@ export default function TasksScreen({ route, navigation }) {
         console.log("item", item);
         return (
             <>
-                <View style={[styles.blockcard, { flex: 1, top: '5%', width: '100%', backgroundColor: themes == 'light' ? colors.white : colors.font_dark }]}>
+                <TouchableOpacity style={[styles.blockcard, { flex: 1, top: '5%', width: '100%', backgroundColor: themes == 'light' ? colors.white : colors.font_dark }]}
+                    onPress={() => onItemPress(item, index)}
+                    disabled={checkConfirmUpdate(item)}>
                     {/* Body */}
                     <View style={{ flex: 2, flexDirection: 'row', }}>
                         <View style={{ flex: 3, }}>
@@ -1216,7 +1218,7 @@ export default function TasksScreen({ route, navigation }) {
                             </View>
                         </View>
                     </View>
-                </View >
+                </TouchableOpacity >
             </>
         );
     };
