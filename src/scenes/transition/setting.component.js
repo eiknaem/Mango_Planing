@@ -5,7 +5,7 @@ import { xt, getDataStorage, setDataStorage } from "../../api/service";
 import { styles, colors } from "../../stylesheet/styles";
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from '@react-navigation/native';
-
+import HeaderLeft from "../../components/headerLeft";
 export default function SettingScreen(route,) {
     const [lang, setLang] = useState({});
     const [themes, setthemes] = useState("");
@@ -15,6 +15,7 @@ export default function SettingScreen(route,) {
 
     useLayoutEffect(() => {
         navigation.setOptions({
+            headerLeft: () => <HeaderLeft navigation={navigation} themes={themes} />, // ส่ง themes
             headerStyle: {
                 backgroundColor: themes === 'light' ? colors.white : colors.back_bg,
                 shadowColor: "transparent",
@@ -24,9 +25,9 @@ export default function SettingScreen(route,) {
             headerTitleStyle: {
                 fontWeight: "bold",
             },
-            headerTintColor: themes === 'light' ? colors.black : colors.white, // แก้ไขตรงนี้
+            headerTintColor: themes === 'light' ? colors.black : colors.white
         });
-    }, [navigation, themes, colors]);
+    }, [navigation, themes]);
 
 
     useFocusEffect(

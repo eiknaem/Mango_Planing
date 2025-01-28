@@ -6,25 +6,16 @@ import { colors, styles } from "../stylesheet/styles";
 import Alert from "../components/Alert"
 import $xt from "../api/xtools";
 import { xt,getDataStorage } from "../api/service";
-export default function HeaderLeft({ navigation, checkBack, docList }) {
+
+export default function HeaderLeft({ navigation, checkBack, docList,themes }) {
    const [alertShow, setAlertShow] = useState(false);
    const checkMat = docList?.detail[0]?.itemcode || null;
-   const [lang, setLang] = useState({});
-   const [themes, setthemes] = useState("");
-   // console.log("navigation", navigation);
+  
    useFocusEffect(
       React.useCallback(() => {
-          getLangDF();
-      }, [])
-  );
-  const getLangDF = async () => {
-      let lang_ = await xt.getLang();
-      setLang(lang_);
-
-      let themes_key = await getDataStorage("themes_ppn") || "light";
-      setthemes(themes_key)
-
-  };
+        console.log("Current theme in HeaderLeft:", themes); // แสดงค่า themes ทุกครั้งที่หน้าจออยู่ในโฟกัส
+      }, [themes])
+    );
    const _beforeNext = () => {
       console.log("checkBack && checkMat", checkBack, checkMat);
       if (checkBack && !$xt.isEmpty(checkMat)) {
