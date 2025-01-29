@@ -9,7 +9,7 @@ import HeaderLeft from "../../components/headerLeft";
 import { useTheme } from "../../components/themeProvider";
 export default function SettingScreen(route,) {
     const [lang, setLang] = useState({});
-    // const [themes, setthemes] = useState("");
+    const [theme, setthemes] = useState("");
     const [pincode, setPincode] = useState(false);
     const [language, setLanguage] = useState('');
     const navigation = useNavigation();
@@ -52,7 +52,7 @@ export default function SettingScreen(route,) {
 
 
         let themes_key = await getDataStorage("themes_ppn") || "light";
-        // setthemes(themes_key)
+        setthemes(themes_key)
 
     };
     const toggleLanguage = async (key) => {
@@ -64,7 +64,7 @@ export default function SettingScreen(route,) {
     const toggleThemes = async (key) => {
         setDataStorage("themes_ppn", key);
         toggleTheme(key);
-        // setthemes(key);
+        setthemes(key);
     };
     return (
         // <View style={{ flex: 1, backgroundColor: themes == 'light' ? colors.white : colors.back_bg, padding: 10 }}>
@@ -166,32 +166,32 @@ export default function SettingScreen(route,) {
         //     </TouchableOpacity>
         // </View>
         <View style={{ flex: 1, backgroundColor: themeObject.colors.background, padding: 10 }}>
-            {/* <View style={{ width: "100%", height: 50, borderBottomWidth: 2, borderBottomColor: colors.image_light, justifyContent: "center" }}>
-                <Text style={[styles.h5_bold, { color: themes == 'light' ? colors.black : colors.white, marginLeft: 10 }]}>{lang.language}</Text>
+            <View style={{ width: "100%", height: 50, borderBottomWidth: 2, borderBottomColor: themeObject.colors.back_dark, justifyContent: "center" }}>
+                <Text style={[styles.h5_bold, { color: themeObject.colors.text, marginLeft: 10 }]}>{lang.language}</Text>
             </View>
             <TouchableOpacity onPress={() => toggleLanguage("TH")}
-                style={{ width: "100%", height: 50, borderBottomWidth: 2, borderBottomColor: colors.image_light, flexDirection: "row" }}>
+                style={{ width: "100%", height: 50, borderBottomWidth: 2, borderBottomColor: themeObject.colors.back_dark, flexDirection: "row" }}>
                 <View style={{ flex: 3, justifyContent: "center" }}>
-                    <Text style={[styles.h5_14, { color: themes == 'light' ? colors.black : colors.white, marginLeft: 30 }]}>{lang.thai}</Text>
+                    <Text style={[styles.h5_14, { color: themeObject.colors.text, marginLeft: 30 }]}>{lang.thai}</Text>
                 </View>
                 <View style={{ flex: 1, justifyContent: "center", alignItems: "flex-end" }}>
-                    {language == 'TH' ? (<Ionicons name="checkmark-circle" size={24} color={themes == 'light' ? colors.black : colors.white} />) : null}
+                    {language == 'TH' ? (<Ionicons name="checkmark-circle" size={24} color={themeObject.colors.text} />) : null}
 
                 </View>
             </TouchableOpacity>
             <TouchableOpacity onPress={() => toggleLanguage("EN")}
-                style={{ width: "100%", height: 50, borderBottomWidth: 2, borderBottomColor: colors.image_light, flexDirection: "row" }}>
+                style={{ width: "100%", height: 50, borderBottomWidth: 2, borderBottomColor: themeObject.colors.back_dark, flexDirection: "row" }}>
                 <View style={{ flex: 3, justifyContent: "center" }}>
-                    <Text style={[styles.h5_14, { color: themes == 'light' ? colors.black : colors.white, marginLeft: 30 }]}>{lang.english}</Text>
+                    <Text style={[styles.h5_14, { color: themeObject.colors.text, marginLeft: 30 }]}>{lang.english}</Text>
                 </View>
                 <View style={{ flex: 1, justifyContent: "center", alignItems: "flex-end" }}>
-                    {language == 'EN' ? (<Ionicons name="checkmark-circle" size={24} color={themes == 'light' ? colors.black : colors.white} />) : null}
+                    {language == 'EN' ? (<Ionicons name="checkmark-circle" size={24} color={themeObject.colors.text} />) : null}
 
                 </View>
             </TouchableOpacity>
-            <View style={{ width: "100%", height: 50, borderBottomWidth: 2, borderBottomColor: colors.image_light, flexDirection: "row" }}>
+            <View style={{ width: "100%", height: 50, borderBottomWidth: 2, borderBottomColor: themeObject.colors.back_dark, flexDirection: "row" }}>
                 <View style={{ flex: 3, justifyContent: "center" }}>
-                    <Text style={[styles.h5_bold, { color: themes == 'light' ? colors.black : colors.white, marginLeft: 10 }]}>{lang.pincode}</Text>
+                    <Text style={[styles.h5_bold, { color: themeObject.colors.text, marginLeft: 10 }]}>{lang.pincode}</Text>
                 </View>
                 <View style={{ flex: 1, justifyContent: "center", alignItems: "flex-end" }}>
                     <Switch
@@ -206,9 +206,9 @@ export default function SettingScreen(route,) {
                 </View>
 
             </View>
-            <View style={{ width: "100%", height: 50, borderBottomWidth: 2, borderBottomColor: colors.image_light, flexDirection: "row" }}>
+            <View style={{ width: "100%", height: 50, borderBottomWidth: 2, borderBottomColor: themeObject.colors.back_dark, flexDirection: "row" }}>
                 <View style={{ flex: 3, justifyContent: "center" }}>
-                    <Text style={[styles.h5_bold, { color: themes == 'light' ? colors.black : colors.white, marginLeft: 10 }]}>{lang.login_biometric}</Text>
+                    <Text style={[styles.h5_bold, { color: themeObject.colors.text, marginLeft: 10 }]}>{lang.login_biometric}</Text>
                 </View>
                 <View style={{ flex: 1, justifyContent: "center", alignItems: "flex-end" }}>
                     <Switch
@@ -222,9 +222,9 @@ export default function SettingScreen(route,) {
                     />
                 </View>
             </View>
-            <View style={{ width: "100%", height: 50, borderBottomWidth: 2, borderBottomColor: colors.image_light, flexDirection: "row" }}>
+            <View style={{ width: "100%", height: 50, borderBottomWidth: 2, borderBottomColor: themeObject.colors.back_dark, flexDirection: "row" }}>
                 <View style={{ flex: 3, justifyContent: "center" }}>
-                    <Text style={[styles.h5_bold, { color: themes == 'light' ? colors.black : colors.white, marginLeft: 10 }]}>{lang.save_media_library}</Text>
+                    <Text style={[styles.h5_bold, { color: themeObject.colors.text, marginLeft: 10 }]}>{lang.save_media_library}</Text>
                 </View>
                 <View style={{ flex: 1, justifyContent: "center", alignItems: "flex-end" }}>
                     <Switch
@@ -238,7 +238,7 @@ export default function SettingScreen(route,) {
                     />
                 </View>
 
-            </View> */}
+            </View>
             <View style={{ width: "100%", height: 50, borderBottomWidth: 2, borderBottomColor: themeObject.colors.border, justifyContent: "center" }}>
                 <Text style={[styles.h5_bold, { color: themeObject.colors.text, marginLeft: 10 }]}>{lang.themes_select}</Text>
             </View>
@@ -248,7 +248,7 @@ export default function SettingScreen(route,) {
                     <Text style={[styles.h5_14, { color: themeObject.colors.text, marginLeft: 30 }]}>{lang.light}</Text>
                 </View>
                 <View style={{ flex: 1, justifyContent: "center", alignItems: "flex-end" }}>
-                    {themes == 'light' ? (<Ionicons name="checkmark-circle" size={24} color={themeObject.colors.text} />) : null}
+                    {theme == 'light' ? (<Ionicons name="checkmark-circle" size={24} color={themeObject.colors.text} />) : null}
 
                 </View>
             </TouchableOpacity>
@@ -258,7 +258,7 @@ export default function SettingScreen(route,) {
                     <Text style={[styles.h5_14, { color: themeObject.colors.text, marginLeft: 30 }]}>{lang.dark}</Text>
                 </View>
                 <View style={{ flex: 1, justifyContent: "center", alignItems: "flex-end" }}>
-                    {themes == 'dark' ? (<Ionicons name="checkmark-circle" size={24} color={themeObject.colors.text} />) : null}
+                    {theme == 'dark' ? (<Ionicons name="checkmark-circle" size={24} color={themeObject.colors.text} />) : null}
 
                 </View>
             </TouchableOpacity>
