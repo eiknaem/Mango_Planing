@@ -16,6 +16,7 @@ import {
   Prompt_300Light,
   Prompt_500Medium
 } from "@expo-google-fonts/prompt";
+import { ThemeProvider, useTheme } from "./src/components/themeProvider";
 import styles from "./src/stylesheet/styles";
 import * as Linking from "expo-linking";
 import * as Notifications from "expo-notifications";
@@ -67,7 +68,6 @@ export default function App({ }) {
 
   useEffect(() => {
     const fetchData = async () => {
-      getLangDF();
       // await versionUpdate();
       // global.loadeData = false;
       try {
@@ -244,14 +244,10 @@ export default function App({ }) {
       </>
     )
   }
-
-  return (
-    <ApplicationProvider
-      {...eva}
-      theme={{ ...eva.light }}
-      customMapping={mapping}
-    >
-      <NavigationContainer>
+  const AppContent = () => {
+    const { themeObject } = useTheme();
+    return (
+      <NavigationContainer theme={themeObject}>
         {isReady ? (
           <HomeLayout
             props={
@@ -262,7 +258,7 @@ export default function App({ }) {
                     headerRight: () => <HeaderRight navigation={navigation} showScan={false} showIcon={false} />,
                     headerLeft: () => <HeaderLeft navigation={navigation} />,
                     headerStyle: {
-                      backgroundColor: themes == 'light' ? colors.white : colors.back_bg,
+                      // backgroundColor: themes == 'light' ? colors.white : colors.back_bg,
                       shadowColor: "transparent",
                       elevation: 0,
                     },
@@ -270,7 +266,7 @@ export default function App({ }) {
                     headerTitleStyle: {
                       fontWeight: "bold",
                     },
-                    headerTintColor: themes == 'light' ? colors.black : colors.white,
+                    // headerTintColor: themes == 'light' ? colors.black : colors.white,
 
                   })}
                 >
@@ -289,7 +285,18 @@ export default function App({ }) {
           </HomeLayout>
         ) : null}
       </NavigationContainer>
-    </ApplicationProvider>
+    );
+  };
+  return (
+    <ThemeProvider>
+      <ApplicationProvider
+        {...eva}
+        theme={{ ...eva.light }}
+        customMapping={mapping}
+      >
+        <AppContent />
+      </ApplicationProvider>
+    </ThemeProvider>
   );
 }
 async function registerForPushNotificationsAsync() {

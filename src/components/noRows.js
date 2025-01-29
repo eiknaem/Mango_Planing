@@ -3,9 +3,11 @@ import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
 import { styles, colors } from "../stylesheet/styles";
 import { useFocusEffect } from "@react-navigation/native";
 import { xt, getDataStorage } from "../api/service";
+import { useTheme } from "./themeProvider";
 export default function NoRows() {
     const [lang, setLang] = useState({});
     const [themes, setthemes] = useState("");
+    const { themeObject } = useTheme();
 
     useFocusEffect(
         React.useCallback(() => {
@@ -22,12 +24,12 @@ export default function NoRows() {
     };
     return (
         <View style={styles.container}>
-            <View style={[styles.background, { backgroundColor: themes == 'light' ? colors.white : colors.back_dark, justifyContent: "center", alignItems: "center" }]}>
+            <View style={[styles.background, { backgroundColor: themeObject.colors.background, justifyContent: "center", alignItems: "center" }]}>
                 <ActivityIndicator size="large" color={"#02D667"} />
-                <Text style={[styles.h4_bold, { marginTop: 10, color: themes == 'light' ? colors.black : colors.white }]}>
+                <Text style={[styles.h4_bold, { marginTop: 10, color: themeObject.colors.text }]}>
                     {lang.overlayNoRows}
                 </Text>
-                <Text style={[styles.h5, {color: themes == 'light' ? colors.black : colors.white }]}>
+                <Text style={[styles.h5, {color: themeObject.colors.text }]}>
                     {lang.overlayNoRows_sub}
                 </Text>
             </View>

@@ -75,21 +75,15 @@ const service = {
     return resp.data;
   },
   async getServer(url) {
-    console.log("getServer");
     var site_ = await getDataStorage("sitevalue_key");
-    console.log("site_", site_);
 
     var token_ = await getDataStorage("token_key");
-    console.log("token_",token_);
     var usertype_ = await getDataStorage("usertype");
-        console.log("usertype_",usertype_);
 
     axioscustom.defaults.baseURL = site_;
-    console.log("axioscustom",axioscustom);
     axioscustom2.defaults.baseURL = site_;
     axioscustom2.defaults.headers.common['X-Mango-Auth'] = token_;
     axioscustom2.defaults.headers.common['X-Mango-Outsorce'] = (usertype_ == "Outsource") ? "Y" : "N";
-    console.log("axioscustom2",axioscustom2);
 
     let error = null;
     let resp = await axioscustom2.get(url);

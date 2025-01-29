@@ -11,7 +11,8 @@ import {
     Dimensions,
     ActivityIndicator,
     Modal,
-    TouchableWithoutFeedback
+    TouchableWithoutFeedback,
+    Platform
 } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
 import { Ionicons, FontAwesome, Feather, AntDesign } from "@expo/vector-icons";
@@ -28,6 +29,7 @@ import { err } from "react-native-svg";
 import moment from "moment";
 import { isLoading } from "expo-font";
 import $xt from "../../api/xtools";
+import { useTheme } from "../../components/themeProvider";
 export default function ProjectScreen({ route, navigation }) {
     // const theme = useTheme();
     const $linq = (arr) => new linq(arr);
@@ -55,34 +57,25 @@ export default function ProjectScreen({ route, navigation }) {
     });
     const { width, height } = Dimensions.get('window');
     const [isShowMenu, setShowMenu] = useState(false);
-
+    const { themeObject } = useTheme();
+    const [isLoading, setLoading] = useState(true);
 
     // const [isRefresh, setRefresh] = React.useState(false);
     useLayoutEffect(() => {
         navigation.setOptions({
-            headerStyle: {
-                backgroundColor: themes === 'light' ? colors.white : colors.back_bg,
-                shadowColor: "transparent",
-                elevation: 0,
-            },
-            headerTitleAlign: "center",
-            headerTitleStyle: {
-                fontWeight: "bold",
-            },
-            headerTintColor: themes === 'light' ? colors.black : colors.white, // แก้ไขตรงนี้
-            // headerShown: global.startTutorial,
+            headerStyle: { backgroundColor: themeObject.colors.background },
+            headerTintColor: themeObject.colors.text,
             headerLeft: () => headerLeft(),
-            // headerRight: () => <HeaderRight navigation={navigation} showIcon={true} showWarehouse={true} docList={getdocList} />,
             headerRight: () => headerRight()
         });
-    }, [route, isCountNoti, loadfile, isShowMenu, themes, colors]);
+    }, [route, isCountNoti, loadfile, isShowMenu,themeObject]);
     const headerLeft = () => {
         let _dataStore = global?.DataStore?.store?.length || 0
         return (
             <View style={{ flexDirection: 'row', width: width * 0.2, height: height * 0.04, justifyContent: "center", alignItems: "center" }}>
                 <TouchableOpacity onPress={() => setShowMenu(!isShowMenu)}
                     style={{ marginRight: '20%', justifyContent: "center", alignItems: "center", zIndex: 20 }}>
-                    <AntDesign name="appstore1" size={18} color={themes == 'light' ? colors.black : colors.white} />
+                    <AntDesign name="appstore1" size={18} color={themeObject.colors.text } />
                 </TouchableOpacity>
             </View>
         )
@@ -94,15 +87,15 @@ export default function ProjectScreen({ route, navigation }) {
                     style={{ marginRight: '20%', justifyContent: "center", alignItems: "center" }}
                     onPress={() => navigation.navigate("Search", { routeName: "Project" })}
                 >
-                    <FontAwesome name="search" size={18} color={themes == 'light' ? colors.black : colors.white} />
+                    <FontAwesome name="search" size={18} color={themeObject.colors.text } />
                 </TouchableOpacity>
 
                 <TouchableOpacity onPress={() => onRefresh()}
                     style={{ marginRight: '20%', justifyContent: "center", alignItems: "center" }}>
-                    <FontAwesome name="refresh" size={18} color={themes == 'light' ? colors.black : colors.white} />
+                    <FontAwesome name="refresh" size={18} color={themeObject.colors.text } />
                 </TouchableOpacity>
                 <TouchableOpacity style={{ marginRight: '20%', justifyContent: "center", alignItems: "center" }}>
-                    <Ionicons name="notifications-outline" size={22} color={themes == 'light' ? colors.black : colors.white} />
+                    <Ionicons name="notifications-outline" size={22} color={themeObject.colors.text } />
                     {isCountNoti > 0 && (
                         <View
                             style={{
@@ -138,7 +131,7 @@ export default function ProjectScreen({ route, navigation }) {
             onloadproject();
             onReadNotification();
             onLoadAuth();
-
+            setLoading(false);
         }, [])
     );
 
@@ -309,33 +302,6 @@ export default function ProjectScreen({ route, navigation }) {
         }
     };
 
-    // const onReadNotification = async () => {
-    //     try {
-    //         console.log("onReadNotification");
-    //         setLoadfile(true)
-    //         console.log("setLoadfile to true");
-    //         // let res2 = await xt.getServer(`Planning/Planning/Planning_Noti_showAll`);
-    //         let res2 = await xt.showAllNoti();
-    //         console.log(res2, "allNotiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii");
-    //         // console.log(res2.length, "count");
-    //         let cleanData = $linq(res2).where(x => x.read_timestamp == null || x.count_d > 0 || x.count_e > 0 || x.count_s > 0).toArray();
-    //         console.log(cleanData, "res noti:==============================================================:==============================================================:============================================================== ");
-
-    //         setCountNoti(cleanData.length); // CountNoti
-    //         setDataNoti(cleanData); // ShowAllNoti
-    //         console.log("set");
-
-    //     } catch (error) {
-    //         console.log("catch noti: ", error);
-    //         setLoadfile(false)
-    //     } finally {
-    //         setLoadfile(false)
-    //         console.log("setLoadfile to false");
-
-
-    //     }
-
-    // }
     const onLoadAuth = async () => {
         let server_data = (await apiAuth.getAuth()).data;
         let auth = server_data.auth;
@@ -402,7 +368,7 @@ export default function ProjectScreen({ route, navigation }) {
                             style={{
                                 width: width * 0.4,
                                 height: height * 0.2,
-                                top: height * 0.10,
+                                top: Platform.OS == 'ios' ? height * 0.10 : height * 0.05,
                                 left: width * 0.06,
                                 borderWidth: 1,
                                 borderColor: colors.image_light,
@@ -438,10 +404,10 @@ export default function ProjectScreen({ route, navigation }) {
     const renderItem = ({ item, index }) => {
         return (
             <>
-                <View style={[styles.blockcard, { backgroundColor: themes == 'light' ? colors.white : colors.font_dark }]}>
+                <View style={[styles.blockcard, { backgroundColor: themeObject.colors.font_dark}]}>
                     {/* Header */}
                     <View style={{ width: '100%', height: 250, }}>
-                        <TouchableOpacity style={[styles.blockcard, { flex: 2, alignItems: 'center', justifyContent: 'center', backgroundColor: themes == 'light' ? colors.image_light : colors.back_dark }]}
+                        <TouchableOpacity style={[styles.blockcard, { flex: 2, alignItems: 'center', justifyContent: 'center', backgroundColor: themeObject.colors.back_dark}]}
                             onPress={() => beforeNextImage(item)}>
                             {!$xt.isEmpty(item.project_img) ?
                                 (
@@ -462,12 +428,12 @@ export default function ProjectScreen({ route, navigation }) {
                                 )}
 
                         </TouchableOpacity>
-                        <View style={[styles.blockcard, { flex: 1, backgroundColor: themes == 'light' ? colors.white : colors.font_dark }]}>
-                            <View style={{ flex: 1, flexDirection: 'row', backgroundColor: themes == 'light' ? colors.white : colors.font_dark }}>
+                        <View style={[styles.blockcard, { flex: 1, backgroundColor: themeObject.colors.font_dark }]}>
+                            <View style={{ flex: 1, flexDirection: 'row', backgroundColor: themeObject.colors.font_dark }}>
                                 <View style={{ flex: 3 }} >
-                                    <Text style={[styles.h5_14, { fontSize: 12, color: themes == 'light' ? colors.black : colors.white }]} numberOfLines={1} > {item.pre_des}</Text>
+                                    <Text style={[styles.h5_14, { fontSize: 12, color: themeObject.colors.text }]} numberOfLines={1} > {item.pre_des}</Text>
                                 </View>
-                                <View style={{ flex: 1, backgroundColor: themes == 'light' ? colors.white : colors.font_dark }}>
+                                <View style={{ flex: 1, backgroundColor: themeObject.colors.font_dark  }}>
                                     <View style={{ alignItems: 'flex-end', paddingEnd: 15 }}>
                                         <Feather name="paperclip" size={20} color="#8d99b2" />
                                     </View>
@@ -475,7 +441,7 @@ export default function ProjectScreen({ route, navigation }) {
                             </View>
 
                             {/* Body */}
-                            <View style={{ flex: 2, flexDirection: 'row', backgroundColor: themes == 'light' ? colors.white : colors.font_dark }}>
+                            <View style={{ flex: 2, flexDirection: 'row', backgroundColor: themeObject.colors.font_dark  }}>
                                 <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center' }}>
                                     <View style={{ width: 30, height: 30, borderWidth: 1, borderColor: colors.greentree, borderRadius: 30, }}>
                                         <Image
@@ -492,17 +458,17 @@ export default function ProjectScreen({ route, navigation }) {
                                             }
                                         ></Image>
                                     </View>
-                                    <Text style={[styles.h5, { marginLeft: 5, fontSize: 12, color: themes == 'light' ? colors.black : colors.white }]}>PM : {item.empfullname_t || lang.overlayNoRows}</Text>
+                                    <Text style={[styles.h5, { marginLeft: 5, fontSize: 12, color: themeObject.colors.text  }]}>PM : {item.empfullname_t || lang.overlayNoRows}</Text>
                                 </View>
                                 <View style={{ flex: 1, flexDirection: 'row' }}>
 
                                     <View style={{ flex: 1, alignItems: 'flex-end', justifyContent: 'center' }}>
-                                        <Text style={[styles.h5, { marginLeft: 5, fontSize: 12, color: themes == 'light' ? colors.black : colors.white }]}>{lang.start_date}</Text>
-                                        <Text style={[styles.h5, { marginLeft: 5, fontSize: 12, color: themes == 'light' ? colors.black : colors.white }]}>{item.startdate}</Text>
+                                        <Text style={[styles.h5, { marginLeft: 5, fontSize: 12, color: themeObject.colors.text  }]}>{lang.start_date}</Text>
+                                        <Text style={[styles.h5, { marginLeft: 5, fontSize: 12, color: themeObject.colors.text  }]}>{item.startdate}</Text>
                                     </View>
                                     <View style={{ flex: 1, alignItems: 'flex-end', justifyContent: 'center' }}>
-                                        <Text style={[styles.h5, { marginLeft: 5, fontSize: 12, color: themes == 'light' ? colors.black : colors.white }]}>{lang.emd_date}</Text>
-                                        <Text style={[styles.h5, { marginLeft: 5, fontSize: 12, color: themes == 'light' ? colors.black : colors.white }]}>{item.enddate}</Text>
+                                        <Text style={[styles.h5, { marginLeft: 5, fontSize: 12, color: themeObject.colors.text  }]}>{lang.emd_date}</Text>
+                                        <Text style={[styles.h5, { marginLeft: 5, fontSize: 12, color: themeObject.colors.text  }]}>{item.enddate}</Text>
                                     </View>
 
                                 </View>
@@ -514,33 +480,34 @@ export default function ProjectScreen({ route, navigation }) {
         );
     };
     return (
-        <>
-            {renderMenu()}
-            < View style={{ flex: 1, backgroundColor: themes == 'light' ? colors.white : colors.back_bg, padding: 10 }} >
-                {dataemty == false ? (
-                    <FlatList
-                        data={dataArr}
-                        renderItem={renderItem}
-                        keyExtractor={(item, index) => index.toString()}
-                        showsVerticalScrollIndicator={false}
-                        // ListHeaderComponent={renderHeader()}
-                        // showsVerticalScrollIndicator={false}
-                        initialNumToRender={10} // Reduce initial render amount
-                        maxToRenderPerBatch={5} // Reduce number in each render batch
-                        windowSize={3} // Reduce the window size
-                    />
-                ) : (
+        < View style={{ flex: 1, backgroundColor: themeObject.colors.background, padding: 10 }} >
+            {isLoading ? <LoadingRows />
+                :
+                (
                     <>
-                        {dataloadding == false ? (
-                            <NoRows />
-                        ) : (
-                            <LoadingRows />
-                        )}
-                    </>
-                )}
+                        {renderMenu()}
+                        < View style={{ flex: 1, backgroundColor: themeObject.colors.background, padding: 10 }} >
+                            {dataemty == false ? (
+                                <FlatList
+                                    data={dataArr}
+                                    renderItem={renderItem}
+                                    keyExtractor={(item, index) => index.toString()}
+                                    showsVerticalScrollIndicator={false}
+                                    // ListHeaderComponent={renderHeader()}
+                                    // showsVerticalScrollIndicator={false}
+                                    initialNumToRender={10} // Reduce initial render amount
+                                    maxToRenderPerBatch={5} // Reduce number in each render batch
+                                    windowSize={3} // Reduce the window size
+                                />
+                            ) : (
+                                <NoRows />
+                            )}
 
-            </View>
-        </>
+                        </View>
+                    </>
+                )
+            }
+        </View >
     );
 }
 
