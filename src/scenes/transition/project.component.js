@@ -12,7 +12,8 @@ import {
     ActivityIndicator,
     Modal,
     TouchableWithoutFeedback,
-    Platform
+    Platform,
+    Alert
 } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
 import { Ionicons, FontAwesome, Feather, AntDesign } from "@expo/vector-icons";
@@ -267,11 +268,24 @@ export default function ProjectScreen({ route, navigation }) {
             });
 
             if (filterdata.length != 0) {
+                setDataArr(filterdata);
                 setDataemty(false);
-            } else {
-                setDataemty(true);
+            } else { 
+                //ไม่พบข้อมูลที่ค้นหา
+                setDataArr(data_); 
+                if (data_.length != 0) {
+                    setDataemty(false);
+                    setDataStorage("ProjectsearchValue", "");
+                    Alert.alert(
+                        'ไม่พบข้อมูลที่ค้นหา', 
+                        'ไม่พบข้อมูลที่ตรงกับคำค้นหา กรุณาลองใหม่อีกครั้ง', 
+                        [{ text: 'ตกลง' }] 
+                    );
+                } else {
+                    setDataemty(true);
+                }
             }
-            setDataArr(filterdata);
+
         } else {
             setDataArr(data_);
             if (data_.length != 0) {
@@ -334,6 +348,11 @@ export default function ProjectScreen({ route, navigation }) {
             return null;
         }
     };
+
+    const onProfile =()  => {
+        setShowMenu(false);
+        navigation.navigate("Profile");
+    }
     const onSetting = () => {
         setShowMenu(false);
         setDataStorage("ProjectsearchValue", "");
@@ -377,10 +396,11 @@ export default function ProjectScreen({ route, navigation }) {
                                 position: "absolute",
                             }}
                         >
-                            <View style={{ flex: 1, flexDirection: "row", alignItems: "center", marginLeft: 5, borderBottomWidth: 1, borderBottomColor: colors.image_light }}>
+                            <TouchableOpacity onPress={() => onProfile()}
+                                style={{ flex: 1, flexDirection: "row", alignItems: "center", marginLeft: 5, borderBottomWidth: 1, borderBottomColor: colors.image_light }}>
                                 <Ionicons name="person-sharp" size={18} color="#8d99b2" />
                                 <Text style={[styles.h5, { marginLeft: 5 }]}>{lang.profile}</Text>
-                            </View>
+                            </TouchableOpacity>
                             <TouchableOpacity style={{ flex: 1, flexDirection: "row", alignItems: "center", marginLeft: 5, borderBottomWidth: 1, borderBottomColor: colors.image_light }}>
                                 <Ionicons name="notifications-sharp" size={18} color="#8d99b2" />
                                 <Text style={[styles.h5, { marginLeft: 5 }]}>{lang.notification}</Text>

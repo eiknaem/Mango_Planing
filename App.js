@@ -41,6 +41,7 @@ import TasksScreen from "./src/scenes/transition/tasks.component"
 // transitons
 import HomeLayout from "./src/template/home_layout";
 import SettingScreen from "./src/scenes/transition/setting.component";
+import ProfileScreen from "./src/scenes/transition/profile.component";
 ////Potho////
 // import PassLogin from "./src/auth/passlogin";
 Notifications.setNotificationHandler({
@@ -244,7 +245,8 @@ export default function App({ }) {
       </>
     )
   }
-  const AppContent = () => {
+  
+  AppContent = () => {
     const { themeObject } = useTheme();
     return (
       <NavigationContainer theme={themeObject}>
@@ -273,6 +275,7 @@ export default function App({ }) {
                   <Stack.Screen name="Passcode" component={Passcode} options={{ headerShown: false }} />
                   <Stack.Screen name="Login" component={Login} options={{ headerShown: false }} />
                   <Stack.Screen name='Setting' component={SettingScreen} />
+                  <Stack.Screen name="Profile" component={ProfileScreen} />
                   {/* // component */}
                   {renderProject()}
                   {renderPlan()}

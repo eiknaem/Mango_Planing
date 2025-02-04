@@ -65,9 +65,9 @@ export default function SearchScreen({ route, navigation }) {
         }
     };
 
-    const     clearHistory = async () => {
+    const clearHistory = async () => {
         const routeName = route.params?.routeName;
-        
+
         Alert.alert(
             'ยืนยันการลบ',
             'คุณต้องการลบประวัติการค้นหาทั้งหมดหรือไม่?',
