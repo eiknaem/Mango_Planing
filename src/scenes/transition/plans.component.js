@@ -12,6 +12,7 @@ import {
     ListRenderItemInfo,
     ScrollView,
     ViewProps,
+    Alert,
 
 } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
@@ -23,6 +24,8 @@ import LoadingRows from "../../components/loadingRows";
 import NoRows from "../../components/noRows";
 import moment from 'moment';
 import { CheckViewPPN } from "../../components/variousRights";
+import $xt from "../../api/xtools";
+
 
 export default function PlansScreen({ route, navigation }) {
     const $linq = arr => new linq(arr);
@@ -121,12 +124,6 @@ export default function PlansScreen({ route, navigation }) {
         setDataStorage('planfilter', "Y");
         onloaddata();
     };
-    const onSearch = async () => {
-        navigation.navigate('Plansearch', {
-            routeNames: "Plansearch"
-        });
-        // abortController.abort();
-    };
     const onloaddata = async () => {
 
         var planfilter_ = await getDataStorage("planfilter") || "Y";
@@ -156,9 +153,13 @@ export default function PlansScreen({ route, navigation }) {
 
         // Set api use version
         try { // For New Api Version
+            const startAPI = Date.now();
             let url = `/Planning/Planning/CalculateProject?pre_event=${route.params.pre_event}`;
             var res = await xt.getServer(url);
-            console.log(res, 'resresresresresresresresresresresresresresres');
+            console.log(`API Call took: ${Date.now() - startAPI}ms`);
+            console.log('Response Data Size:', JSON.stringify(res).length, 'bytes');
+
+            // console.log(res, 'resresresresresresresresresresresresresresres');
             if (usertype_ == "Employee") {
                 let viewPPN = await CheckViewPPN();
                 setViewPPN(viewPPN)
@@ -180,6 +181,10 @@ export default function PlansScreen({ route, navigation }) {
                 v.status = xt.getStatus2(v.status);
                 v.start_date_show = moment(v.start_date2).format('DD/MM/YYYY');
                 v.end_date_show = moment(v.end_date2).format('DD/MM/YYYY');
+                if (v.img) {
+                    const imgUrl = dataServer + "api/file/download/?download=false&id=" + v.img;
+                    v.img = imgUrl;
+                }
             });
 
             console.log("testplan ----------------------------->", testplan);
@@ -269,11 +274,11 @@ export default function PlansScreen({ route, navigation }) {
         loadPlanData(testplan, searchValue_, statusValue_, searchTime_);
     }
     const renderItem = ({ item, index }) => {
-        console.log("item", item);
+        // console.log("item", item);
         return (
             <>
                 <TouchableOpacity style={[styles.blockcard, { flex: 1, top: '5%', width: '100%', backgroundColor: themes == 'light' ? colors.white : colors.font_dark }]}
-                    onPress={() => onItemPress(item)} 
+                    onPress={() => onItemPress(item)}
                 >
                     {/* Body */}
                     <View style={{ flex: 2, flexDirection: 'row', }}>
@@ -281,7 +286,7 @@ export default function PlansScreen({ route, navigation }) {
                             <Text style={[styles.h4, { marginLeft: 5, fontSize: 14, color: themes == 'light' ? colors.black : colors.white }]}>{lang.planname} : {item.planname} </Text>
                         </View>
                         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'flex-end', paddingEnd: 20 }}>
-                            <Text style={[styles.h5_bold, { backgroundColor: colors.red, width: 90, height: 25, borderRadius: 5, marginLeft: 5, fontSize: 14, textAlign: 'center', color: themes == 'light' ? colors.black : colors.white }]}>Overdue</Text>
+                            <Text style={[styles.h5_bold, { backgroundColor: colors.red, width: 90, height: 25, borderRadius: 5, marginLeft: 5, fontSize: 14, textAlign: 'center', color: themes == 'light' ? colors.black : colors.white }]}> {item.status}</Text>
                         </View>
                     </View>
                     <View style={{ flex: 2, flexDirection: 'row' }}>
@@ -305,32 +310,57 @@ export default function PlansScreen({ route, navigation }) {
                         </View>
                     </View>
                     <View style={{ flex: 4, marginTop: 10, flex: 6, flexDirection: 'row', backgroundColor: themes == 'light' ? colors.white : colors.font_dark }}>
-                        <View style={{ flex: 4, flexDirection: 'row', alignItems: 'center' }}>
-                            <View style={{ width: 30, height: 30, backgroundColor: 'lime', borderRadius: 30, }}>
-                            </View>
-                        </View>
-                        <View style={{ flex: 6, flexDirection: 'row', }}>
-                            <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'center' }}>
-                                <View style={{ flex: 4, alignItems: 'center' }}>
-                                    <Text style={[styles.h5, { marginLeft: 5, fontSize: 12, color: themes == 'light' ? colors.black : colors.white }]}>{lang.start_date}</Text>
-                                    <Text style={[styles.h5, { marginLeft: 5, fontSize: 12, color: themes == 'light' ? colors.black : colors.white }]}>{item.start_date_show}</Text>
+                        <TouchableOpacity 
+                        onPress={() => onAssignList(item)}
+                        style={{ flex: 4, flexDirection: 'row', alignItems: 'center' }}>
+                            {item.ow_list.map((owner, index) => (
+                                <View
+                                    key={index}
+                                    style={{
+                                        width: 30,
+                                        height: 30,
+                                        borderWidth: 1,
+                                        borderColor: colors.greentree,
+                                        borderRadius: 30,
+                                        marginLeft: index > 0 ? -10 : 0 // ให้รูปซ้อนกันเล็กน้อย
+                                    }}
+                                >
+                                    <Image
+                                        style={{
+                                            width: "100%",
+                                            height: "100%",
+                                            borderRadius: 90,
+                                        }}
+                                        resizeMode="cover"
+                                        source={
+                                            !$xt.isEmpty(owner.img)
+                                                ? { uri: dataServer + "api/file/download/?download=false&id=" + owner.img }
+                                                : require("../../../assets/images/user.png")
+                                        }
+                                    />
                                 </View>
-                                <View style={{ flex: 4, alignItems: 'center' }}>
-                                    <Text style={[styles.h5, { marginLeft: 5, fontSize: 12, color: themes == 'light' ? colors.black : colors.white }]}>{lang.emd_date}</Text>
-                                    <Text style={[styles.h5, { marginLeft: 5, fontSize: 12, color: themes == 'light' ? colors.black : colors.white }]}>{item.end_date_show}</Text>
+                            ))}
+                            {item.ow_list.length > 3 && (
+                                <View style={{
+                                    marginLeft: 5,
+                                    backgroundColor: colors.grey_t,
+                                    borderRadius: 15,
+                                    padding: 5
+                                }}>
+                                    <Text style={{
+                                        color: colors.white,
+                                        fontSize: 12
+                                    }}>
+                                        +{item.ow_list.length - 3}
+                                    </Text>
                                 </View>
-                                <TouchableOpacity style={{ flex: 2, alignItems: 'center' }}>
-                                    <Feather name="paperclip" size={20} color="#8d99b2" />
-                                    <View style={{ width: width * 0.05, height: height * 0.025, position: "absolute", backgroundColor: colors.black, right: width * -0.001, top: "30%", borderRadius: 20, alignItems: "center", justifyContent: "center" }}>
-                                        {loadfile
-                                            ? <ActivityIndicator size={12} color={"#fff"} />
-                                            : (<Text style={[styles.h5_bold, { color: colors.white, fontSize: 10, marginLeft: 3 }]}>{"99+"} </Text>)}
-                                        {/* <ActivityIndicator size={12} color={"#fff"} /> */}
-                                    </View>
-                                </TouchableOpacity>
-                            </View>
-                        </View>
+                            )}
+                        </TouchableOpacity>
+
+
+                        {/* เพิ่มส่วน Start Date, End Date */}
                     </View>
+
                 </TouchableOpacity >
             </>
         );
@@ -346,51 +376,140 @@ export default function PlansScreen({ route, navigation }) {
             console.log("error: ", error);
         }
     };
+
+    // const onFilter = async (data_, searchValue, statusValue, searchTime_) => {
+    //     console.log("data onL ", data_.length);
+    //     console.log("searchTime_searchTime_: ", searchTime_);
+
+    //     if (searchTime_ != "") {
+    //         console.log("กรอง วัน");
+    //         const _searchTime = JSON.parse(searchTime_);
+    //         console.log("searchTime ==================>", _searchTime);
+    //         data_date = $linq(data_).where(w =>
+    //             (moment(w?.start_date2).format("YYYYMMDD") >= moment(_searchTime.time_start).format("YYYYMMDD") &&
+    //                 moment(w?.start_date2).format("YYYYMMDD") <= moment(_searchTime.time_end).format("YYYYMMDD")) ||
+    //             (moment(_searchTime.time_start).format("YYYYMMDD") >= moment(w?.start_date2).format("YYYYMMDD") &&
+    //                 moment(_searchTime.time_start).format("YYYYMMDD") <= moment(w?.end_date2).format("YYYYMMDD"))).toArray();
+
+    //         if (data_date > 0) {
+    //             data_ = data_date
+    //         }else if (data_date == 0){
+    //             setDataemty(false);
+    //             setDataStorage("plansearchValue", "");
+    //             setDataStorage('searchTime', "");
+    //             setDataStorage('statusValue', "inprogress,notstart,overdue,delay");
+    //             Alert.alert(
+    //                 'ไม่พบข้อมูลที่ค้นหา',
+    //                 'ไม่พบข้อมูลที่ตรงกับคำค้นหา กรุณาลองใหม่อีกครั้ง',
+    //                 [{ text: 'ตกลง' }]
+    //             );
+    //         }
+    //         console.log("data_ search date: ", data_);
+
+    //     }
+    //     const status_split = (statusValue == "") ? [] : statusValue.split(",");
+    //     setStatusValue(status_split);
+
+    //     if (searchValue || status_split.length != 0) {
+    //         const filterdata = data_.filter(item => status_split.includes(item.status)).filter(function filter(c) {
+    //             return (
+    //                 searchValue === '' ||
+    //                 c.planname.toLowerCase().startsWith(searchValue.toLowerCase())
+    //             );
+    //         });
+    //         if (filterdata.length != 0) {
+    //             setDataemty(false);
+    //             setDataArr(filterdata);
+    //         } else {
+    //             setDataArr(data_);
+    //             setDataemty(false);
+    //             setDataStorage("plansearchValue", "");
+    //             setDataStorage('searchTime', "");
+    //             setDataStorage('statusValue', "inprogress,notstart,overdue,delay");
+    //             Alert.alert(
+    //                 'ไม่พบข้อมูลที่ค้นหา',
+    //                 'ไม่พบข้อมูลที่ตรงกับคำค้นหา กรุณาลองใหม่อีกครั้ง',
+    //                 [{ text: 'ตกลง' }]
+    //             );
+    //         }
+    //         // loadPlanData(filterdata);
+
+    //     } else {
+    //         // loadPlanData(data_);
+    //         setDataArr(data_);
+    //         if (data_.length != 0) {
+    //             setDataemty(false);
+    //         } else {
+    //             setDataemty(true);
+    //         }
+    //     }
+    //     setDataloadding(false)
+
+    // };
+
     const onFilter = async (data_, searchValue, statusValue, searchTime_) => {
         console.log("data onL ", data_.length);
         console.log("searchTime_searchTime_: ", searchTime_);
 
-        if (searchTime_ != "") {
+        let data_1 = data_;
+
+        if (searchTime_ !== "") {
             console.log("กรอง วัน");
             const _searchTime = JSON.parse(searchTime_);
             console.log("searchTime ==================>", _searchTime);
-            data_ = $linq(data_).where(w =>
-                (moment(w?.start_date).format("YYYYMMDD") >= moment(_searchTime.time_start).format("YYYYMMDD") &&
-                    moment(w?.start_date).format("YYYYMMDD") <= moment(_searchTime.time_end).format("YYYYMMDD")) ||
-                (moment(_searchTime.time_start).format("YYYYMMDD") >= moment(w?.start_date).format("YYYYMMDD") &&
-                    moment(_searchTime.time_start).format("YYYYMMDD") <= moment(w?.end_date).format("YYYYMMDD"))).toArray();
 
-            console.log("data_ search date: ", data_);
+            data_1 = $linq(data_1).where(w =>
+                (moment(w?.start_date2).format("YYYYMMDD") >= moment(_searchTime.time_start).format("YYYYMMDD") &&
+                    moment(w?.start_date2).format("YYYYMMDD") <= moment(_searchTime.time_end).format("YYYYMMDD")) ||
+                (moment(_searchTime.time_start).format("YYYYMMDD") >= moment(w?.start_date2).format("YYYYMMDD") &&
+                    moment(_searchTime.time_start).format("YYYYMMDD") <= moment(w?.end_date2).format("YYYYMMDD"))
+            ).toArray();
 
+            console.log("Filter by date: ", data_1);
         }
-        const status_split = (statusValue == "") ? [] : statusValue.split(",");
+
+        const status_split = (statusValue === "") ? [] : statusValue.split(",");
         setStatusValue(status_split);
-        if (searchValue || status_split.length != 0) {
-            const filterdata = data_.filter(item => status_split.includes(item.status)).filter(function filter(c) {
-                return (
-                    searchValue === '' ||
-                    c.planname.toLowerCase().startsWith(searchValue.toLowerCase())
-                );
-            });
-            if (filterdata.length != 0) {
-                setDataemty(false);
-            } else {
-                setDataemty(true);
-            }
-            // loadPlanData(filterdata);
-            setDataArr(filterdata);
+
+        if (status_split.length > 0) {
+            data_1 = data_1.filter(item => status_split.includes(item.status));
+        }
+
+        let filterData = data_1;
+        if (searchValue && searchValue.trim() !== '') {
+            filterData = data_1.filter(item =>
+                item.planname.toLowerCase().includes(searchValue.toLowerCase())
+            );
+        }
+
+        if (filterData.length > 0) {
+            setDataemty(false);
+            setDataArr(filterData);
         } else {
-            // loadPlanData(data_);
-            setDataArr(data_);
-            if (data_.length != 0) {
+            if (searchValue || status_split.length > 0) {
+                await Promise.all([
+                    setDataStorage("plansearchValue", ""),
+                    setDataStorage('searchTime', ""),
+                    setDataStorage('statusValue', "inprogress,notstart,overdue,delay")
+                ]);
+
+                Alert.alert(
+                    'ไม่พบข้อมูลที่ค้นหา',
+                    'ไม่พบข้อมูลที่ตรงกับคำค้นหา กรุณาลองใหม่อีกครั้ง',
+                    [{ text: 'ตกลง' }]
+                );
+
+                setDataArr(data_);
                 setDataemty(false);
             } else {
-                setDataemty(true);
+                setDataArr(data_);
+                setDataemty(data_.length === 0);
             }
         }
-        setDataloadding(false)
 
+        setDataloadding(false);
     };
+
     const onAttachfilePress = (item) => {
         console.log("itemplan onAttachfilePress: ", item);
         if (isViewPPN == "Y") {
@@ -444,23 +563,31 @@ export default function PlansScreen({ route, navigation }) {
             {dataemty == false ? (
                 <>
                     {/* Status */}
-                    <View style={{ flexDirection: 'row', backgroundColor: themes == 'light' ? colors.white : colors.back_dark }}>
-                        <Text style={[styles.h5_bold, { marginLeft: 5, fontSize: 16, color: themes == 'light' ? colors.black : colors.white }]}>Status :</Text>
-                        <View style={{ flexDirection: 'row', width: width * 2 }}>
-                            <TouchableOpacity style={{ backgroundColor: '#8F9BB3', marginLeft: 5, alignItems: 'center', justifyContent: 'center' }}>
-                                <Text style={[styles.h5, { marginLeft: 5, fontSize: 14, color: themes == 'light' ? colors.black : colors.white }]}>In progress </Text>
-                            </TouchableOpacity>
-                            <TouchableOpacity style={{ backgroundColor: '#8F9BB3', marginLeft: 5, alignItems: 'center', justifyContent: 'center' }}>
-                                <Text style={[styles.h5, { marginLeft: 5, fontSize: 14, color: themes == 'light' ? colors.black : colors.white }]}>Not Start </Text>
-                            </TouchableOpacity>
-                            <TouchableOpacity style={{ backgroundColor: '#8F9BB3', marginLeft: 5, alignItems: 'center', justifyContent: 'center' }}>
-                                <Text style={[styles.h5, { marginLeft: 5, fontSize: 14, color: themes == 'light' ? colors.black : colors.white }]}>Delay </Text>
-                            </TouchableOpacity>
-                            <TouchableOpacity style={{ backgroundColor: '#8F9BB3', marginLeft: 5, alignItems: 'center', justifyContent: 'center' }}>
-                                <Text style={[styles.h5, { marginLeft: 5, fontSize: 14, color: themes == 'light' ? colors.black : colors.white }]}>Overdue </Text>
-                            </TouchableOpacity>
-                        </View>
-                    </View>
+                    <View style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: themes == 'light' ? colors.white : colors.back_dark }}>
+                                            <View>
+                                                <Text style={[styles.h5_bold, { marginLeft: 5, fontSize: 16, color: themes == 'light' ? colors.black : colors.white }]}>Status :</Text>
+                                            </View>
+                                            <View style={{ flexDirection: 'row', paddingRight: 10 }}>
+                                                {statusValue.map((status, index) => (
+                                                    <View key={index} style={{
+                                                        backgroundColor: '#38B34A',
+                                                        marginLeft: 5,
+                                                        alignItems: 'center',
+                                                        justifyContent: 'center',
+                                                        padding: 5,
+                                                        borderRadius: 10
+                                                    }}>
+                                                        <Text style={[styles.h5, {
+                                                            // marginLeft: 5,
+                                                            fontSize: 12,
+                                                            color: 'white'
+                                                        }]}>
+                                                            {status.charAt(0).toUpperCase() + status.slice(1)}
+                                                        </Text>
+                                                    </View>
+                                                ))}
+                                            </View>
+                                        </View>
                     <View style={{ top: '1%', paddingBottom: '5%' }}>
                         <FlatList
                             data={dataArr}

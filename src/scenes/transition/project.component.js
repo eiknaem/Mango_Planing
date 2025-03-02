@@ -86,7 +86,7 @@ export default function ProjectScreen({ route, navigation }) {
             <View style={{ flexDirection: 'row', width: width * 0.2, height: height * 0.04, justifyContent: "center", alignItems: "center" }}>
                 <TouchableOpacity
                     style={{ marginRight: '20%', justifyContent: "center", alignItems: "center" }}
-                    onPress={() => navigation.navigate("Search", { routeName: "Project" })}
+                    onPress={() => navigation.navigate("ProjectSearch")}
                 >
                     <FontAwesome name="search" size={18} color={themeObject.colors.text} />
                 </TouchableOpacity>
@@ -95,7 +95,9 @@ export default function ProjectScreen({ route, navigation }) {
                     style={{ marginRight: '20%', justifyContent: "center", alignItems: "center" }}>
                     <FontAwesome name="refresh" size={18} color={themeObject.colors.text} />
                 </TouchableOpacity>
-                <TouchableOpacity style={{ marginRight: '20%', justifyContent: "center", alignItems: "center" }}>
+                <TouchableOpacity
+                    onPress={() => goNextNoti()}
+                    style={{ marginRight: '20%', justifyContent: "center", alignItems: "center" }}>
                     <Ionicons name="notifications-outline" size={22} color={themeObject.colors.text} />
                     {isCountNoti > 0 && (
                         <View
@@ -174,6 +176,15 @@ export default function ProjectScreen({ route, navigation }) {
     };
     const onloadproject = async () => {
 
+        const server = await getDataStorage("sitevalue_key");
+
+        if (!server) {
+            console.log("No dataServer available");
+            setDataloadding(false);
+            return;
+        }
+        setDataServer(server);
+
         var Projectfilter_ = (await getDataStorage("Projectfilter")) || "Y";
         var usertype_ = await getDataStorage("usertype");
         console.log("usertype_ project: ", usertype_);
@@ -246,11 +257,23 @@ export default function ProjectScreen({ route, navigation }) {
         for (let xx in data) {
             let x = data[xx];
             try {
-                x.pathpic = ongetimg({ download: false, file: x.pathpic });
-                // x.project_img = ongetimg({ download: false, file: x.project_img });
-                // x.project_img = await reFormatPicture(x.project_img);;
+                // console.log("Processing image for:", x.pre_des);
+                // console.log("Current dataServer:", server);
+
+                if (x.pathpic) {
+                    const pathpicUrl = server + "api/file/download/?download=false&id=" + x.pathpic;
+                    // console.log("PathPic URL:", pathpicUrl);
+                    x.pathpic = pathpicUrl;
+                }
+
+                if (x.project_img) {
+                    const projectImgUrl = server + "api/file/download/?download=false&id=" + x.project_img;
+                    // console.log("ProjectImg URL:", projectImgUrl);
+                    x.project_img = projectImgUrl;
+                }
 
             } catch (ex) {
+                console.error("Error processing images:", ex);
                 MessageBox.Alert(`Error`, ex.toString(), "OK", navigation);
             }
         }
@@ -270,20 +293,17 @@ export default function ProjectScreen({ route, navigation }) {
             if (filterdata.length != 0) {
                 setDataArr(filterdata);
                 setDataemty(false);
-            } else { 
+            } else {
                 //ไม่พบข้อมูลที่ค้นหา
-                setDataArr(data_); 
-                if (data_.length != 0) {
-                    setDataemty(false);
-                    setDataStorage("ProjectsearchValue", "");
-                    Alert.alert(
-                        'ไม่พบข้อมูลที่ค้นหา', 
-                        'ไม่พบข้อมูลที่ตรงกับคำค้นหา กรุณาลองใหม่อีกครั้ง', 
-                        [{ text: 'ตกลง' }] 
-                    );
-                } else {
-                    setDataemty(true);
-                }
+                setDataArr(data_);
+                setDataemty(false);
+                setDataStorage("ProjectsearchValue", "");
+                Alert.alert(
+                    'ไม่พบข้อมูลที่ค้นหา',
+                    'ไม่พบข้อมูลที่ตรงกับคำค้นหา กรุณาลองใหม่อีกครั้ง',
+                    [{ text: 'ตกลง' }]
+                );
+
             }
 
         } else {
@@ -339,20 +359,30 @@ export default function ProjectScreen({ route, navigation }) {
             return null;
         }
     };
+
+    // const ongetimgProject = ({ download, file }) => {
+    //     if (file) {
+    //         var ing =
+    //             dataServer + "api/file/download/?download=" + download + "&id=" + file;
+    //         return { uri: ing };
+    //     } else {
+    //         return null;
+    //     }
+    // };
+
     const ongetimgProject = ({ download, file }) => {
         if (file) {
-            var ing =
-                dataServer + "api/file/download/?download=" + download + "&id=" + file;
-            return { uri: ing };
-        } else {
-            return null;
+            const imgUrl = dataServer + "api/file/download/?download=" + download + "&id=" + file;
+            return { uri: imgUrl };
         }
+        return null;
     };
 
-    const onProfile =()  => {
+    const onProfile = () => {
         setShowMenu(false);
         navigation.navigate("Profile");
     }
+
     const onSetting = () => {
         setShowMenu(false);
         setDataStorage("ProjectsearchValue", "");
@@ -360,6 +390,81 @@ export default function ProjectScreen({ route, navigation }) {
             site: dataServer,
         });
     };
+
+    const onLogoutConfirm = async () => {
+        setShowMenu(false);
+        setDataStorage("ProjectsearchValue", "");
+
+        let rs = await xt.getServer("api/public/logout?all=false&is_api=N");
+
+        if (rs.success) {
+            try {
+                if (usertype === "Employee") {
+                    let url = `Ext_API/Approve/set_tokenpush?maincode=${isAuth.maincode}&empno=${isAuth.empno}&session_id=${isAuth.session_id}&token_push=${""}`;
+                    await xt.getServer(url);
+                }
+
+                await setDataStorage("token_key", "");
+                await setDataStorage("login_UP", "Y");
+                await setDataStorage("faceid_UP", "Y");
+                await AsyncStorage.setItem("fromAuth", "N");
+
+                let pincode_key = await getDataStorage("pincode_ppn");
+                let pincodeval_key = await getDataStorage("pincodeval_ppn") || "";
+
+                if (pincode_key === "true" && pincodeval_key !== "") {
+                    navigation.navigate("PinCode");
+                } else {
+                    navigation.navigate("Login");
+                }
+
+            } catch (error) {
+                console.log("Logout error:", error);
+                Alert.alert(
+                    'แจ้งเตือน',
+                    'เกิดข้อผิดพลาดในการออกจากระบบ กรุณาลองใหม่อีกครั้ง'
+                );
+            }
+        }
+    };
+
+    const onLogout = () => {
+        Alert.alert(
+            'ออกจากระบบ',
+            'ยืนยันการออกจากระบบ',
+            [
+                {
+                    text: 'ยกเลิก',
+                    onPress: () => { },
+                    style: 'cancel'
+                },
+                {
+                    text: 'ยืนยัน',
+                    onPress: () => onLogoutConfirm()
+                }
+            ]
+        );
+    };
+
+
+    const goNextNoti = () => {
+        let newDoc = [...isDataNoti]
+        console.log("LINE 612 :newDoc: ", newDoc, "<======================================================================================================");
+        setDataStorage("ProjectsearchValue", "");
+        navigation.navigate("Notification", {
+            docList: newDoc,
+            skill: "Normal",
+            owner_id: newDoc[0]?.owner_id || "",
+            owner_id_outsource: newDoc[0]?.owner_id_outsource || "",
+            site: dataServer,
+            alertDateType: alertDateType,
+            themes: themes
+            // viewppn: isViewPPN
+            // skill: (item.IsOwner == "Y") ? "Normal" : "JustWatch"
+        })
+    }
+
+
     const beforeNextImage = (item) => {
         setDataStorage('searchTime', "");
         setDataStorage("plansearchValue", "");
@@ -410,10 +515,11 @@ export default function ProjectScreen({ route, navigation }) {
                                 <Ionicons name="settings" size={18} color="#8d99b2" />
                                 <Text style={[styles.h5, { marginLeft: 5 }]}>{lang.setting_system}</Text>
                             </TouchableOpacity>
-                            <View style={{ flex: 1, flexDirection: "row", alignItems: "center", marginLeft: 5 }}>
+                            <TouchableOpacity onPress={() => onLogout()}
+                                style={{ flex: 1, flexDirection: "row", alignItems: "center", marginLeft: 5 }}>
                                 <Ionicons name="power" size={18} color="#8d99b2" />
-                                <Text style={[styles.h5, { marginLeft: 5 }]}>{lang.setting_system}</Text>
-                            </View>
+                                <Text style={[styles.h5, { marginLeft: 5 }]}>{lang.logout}</Text>
+                            </TouchableOpacity>
                         </View>
                     </View>
                 </TouchableWithoutFeedback>
@@ -435,11 +541,13 @@ export default function ProjectScreen({ route, navigation }) {
                                         style={{
                                             width: "100%",
                                             height: "100%",
-                                        }}
-                                        resizeMode="contain"
-                                        source={ongetimgProject(false, item.project_img)}
-                                    />
+                                            borderRadius: 6,
 
+                                        }}
+                                        resizeMode="cover"
+                                        // source={ongetimgProject(false, item.project_img)}
+                                        source={{ uri: item.project_img }}
+                                    />
                                 )
                                 :
                                 (
@@ -468,8 +576,9 @@ export default function ProjectScreen({ route, navigation }) {
                                             style={{
                                                 width: "100%",
                                                 height: "100%",
+                                                borderRadius: 90,
                                             }}
-                                            resizeMode="contain"
+                                            resizeMode="cover"
                                             // source={{ uri: ongetimg(false, item.pathpic)}}
                                             source={
                                                 !$xt.isEmpty(item.pathpic)

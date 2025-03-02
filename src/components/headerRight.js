@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from "react";
 import { TouchableOpacity, View, Animated, Easing, AppState, Text } from 'react-native';
 // import * as Animatable from 'react-native-animatable';
-import { MaterialCommunityIcons, Ionicons, MaterialIcons } from '@expo/vector-icons';
+import { MaterialCommunityIcons, Ionicons } from '@expo/vector-icons';
 import { colors, styles } from "../stylesheet/styles";
 import $xt from "../api/xtools";
 import Alert from "../../src/components/Alert";

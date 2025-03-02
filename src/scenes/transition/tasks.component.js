@@ -12,10 +12,10 @@ import {
     ListRenderItemInfo,
     ScrollView,
     ViewProps,
-
+    Alert,
 } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
-import { Ionicons, FontAwesome, Feather, AntDesign } from "@expo/vector-icons";
+import { Ionicons, FontAwesome, Feather, AntDesign, EvilIcons } from "@expo/vector-icons";
 import linq from "js-linq";
 import { styles, colors } from "../../stylesheet/styles";
 import { xt, getDataStorage, setDataStorage } from "../../api/service";
@@ -59,8 +59,13 @@ export default function TasksScreen({ route, navigation }) {
     const [loadfile, setLoadfile] = useState(false);
 
 
+
+
     const [searchTime, setSeachTime] = useState(null);
     const { width, height } = Dimensions.get('window');
+    // console.log("dataAge: ", dataAge);
+    // console.log("dataAge2: ", getDataAgeSearch);
+
 
 
     useLayoutEffect(() => {
@@ -78,24 +83,31 @@ export default function TasksScreen({ route, navigation }) {
             headerLeft: () => headerLeft(),
             headerRight: () => headerRight()
         });
-    }, [route, loadfile, themes, colors]);
+    }, [route, loadfile, themes, colors, dataAge, isTaskAmount, taskArr, isLastTask]);
+
+
     useFocusEffect(
         React.useCallback(() => {
             getLangDF();
             onloadAuth();
             onloadconfig();
             checkViewPPn();
-
+            // console.log("DataAge useFocus", dataAge)
+            // console.log("GetViewPPN", getViewPPN)
             if (getViewPPN == "NOTI") {
                 setDataAge(Params.dataAge);
                 setLastTask(Params.taskid_h);
                 onloaddata(Params.dataAge, Params.taskid_h, "next");
             } else {
+                // console.log("else useFocusEffect...");
                 onloaddata(null, null, null);
             }
 
         }, [route.params.pre_event, getDataAgeSearch, getDataTaskSearch, getPoint])
     );
+
+
+
     const headerLeft = () => {
         let _dataStore = global?.DataStore?.store?.length || 0
         return (
@@ -109,10 +121,11 @@ export default function TasksScreen({ route, navigation }) {
         )
     };
     const headerRight = () => {
+
         return (
             <View style={{ flexDirection: 'row', width: width * 0.2, height: height * 0.04, justifyContent: "center", alignItems: "center" }}>
                 <TouchableOpacity style={{ marginRight: '20%', justifyContent: "center", alignItems: "center" }}
-                    onPress={() => navigation.navigate("Search", { routeName: "Tasks" })}
+                    onPress={() => onSearch()}
                 >
                     <FontAwesome name="search" size={18} color={themes == 'light' ? colors.black : colors.white} />
                 </TouchableOpacity>
@@ -132,16 +145,24 @@ export default function TasksScreen({ route, navigation }) {
         setthemes(themes_key)
     };
     const onItemPress = (item, index) => {
-        console.log("getDataAgeSearch: ", getDataAgeSearch);
-        console.log("item goprogress: ", item);
-        console.log("index goprogress: ", index);
+        // console.log("getDataAgeSearch: ", getDataAgeSearch);
+        // console.log("item goprogress: ", item);
+        // console.log("index goprogress: ", index);
+        // console.log("age load in item", dataAge)
         if (item.hasChild == "N") {
             setDataStorage("progress_per", "");
             setDataStorage("progress_qty", "");
             setDataStorage("PGBack", "");
-            setDataAge(1);
+            // setDataAge(1);
             setTaskArr([]);
             let nav = config.PPN_PG_RES == "Y" ? "progressTab" : "Progress";
+            // let nav = "progressTab";
+            console.log("conFigPPN: ",config.PPN_PG_RES)
+            // console.log("nav: ", nav);
+
+            console.log("แ", route.params.pre_event);
+            console.log("Pre_event2: ", route.params.pre_event2);
+            
             navigation.navigate(nav, {
                 //progressTab
                 site: dataServer,
@@ -156,13 +177,14 @@ export default function TasksScreen({ route, navigation }) {
                 manager: getManagerPlan,
                 dataTask: taskArr,
                 dataAge: dataAge,
-                navfrom: "TASK"
+                navfrom: "TASK",
             });
         } else {
-            let goChildNext = dataAge + 1
+            const goChildNext = dataAge + 1
             console.log("goChildNext: ", goChildNext);
             setDataAge(goChildNext)
             onloaddata(goChildNext, item.taskid, "next");
+            setTaskAmount(item.taskid);
             setLastTask(item.taskid);
             // setTashkH(item.taskid_h);
             if (getPoint == "search") {
@@ -226,9 +248,12 @@ export default function TasksScreen({ route, navigation }) {
         });
     };
     const onSearch = async () => {
-        console.log("lasttask onsearch: ", isLastTask);
-        navigation.navigate("Tasksearch", {
-            routeNames: "Tasksearch",
+        console.log("age on search: ", dataAge);
+        console.log("taskArr on search: ", taskArr);
+
+        // navigation.navigate("Search", { routeName: "Tasks" })
+        navigation.navigate("Search", {
+            routeName: "Tasks",
             dataTask: taskArr,
             dataAge: dataAge,
             pre_event: route.params.pre_event,
@@ -238,28 +263,37 @@ export default function TasksScreen({ route, navigation }) {
         });
     };
     const onRefresh = async () => {
-        console.log("dataAge onRefresh: ", dataAge);
+        const currentAge = dataAge;
+        console.log("dataAge onRefresh (ก่อนรีเฟรช): ", currentAge);
         setDataStorage("TasksearchTime", "");
         setDataStorage("tasksearchValue", "");
         setDataStorage("taskstatusValue", "inprogress,notstart,overdue,delay");
         setDataStorage("taskfilter", "Y");
         const newArr = [...taskArr]
         let lastElement = newArr[newArr.length - 1];
-        onloaddata(dataAge, lastElement, "refresh");
+        console.log("lastElement onRefresh: ", lastElement);
+        let checkGetPoint = getPoint == "search" ? lastElement : isTaskAmount;
+        onloaddata(currentAge, checkGetPoint, "refresh");
     };
     const onloadAuth = async () => {
         let updateProgress = await UpdateProgress_UR()
         setUserRight(updateProgress);
     };
     const onloaddata = async (age, nextTask, point) => { // EDIT / BUG
-
+        console.log("age load: ", age);
+        // if((getDataAgeSearch != null) && (getPoint == "search")) {
+        //     age = getDataAgeSearch
+        // }
+        // setDataAge(age);
         var usertype_ = await getDataStorage("usertype");
         console.log("usertype_ task: ", usertype_);
         setUsertype(usertype_)
+        // console.log("dataAge onload: ", age);   
 
-        console.log("age load: ", age);
+
         console.log("point: ", point);
-        let Current_age = age || 1;
+        console.log("nextTask: ", nextTask);
+        let Current_age = age;
         let ThisTask = nextTask
         console.log("getPoint onload ", getPoint);
 
@@ -270,6 +304,7 @@ export default function TasksScreen({ route, navigation }) {
             console.log("if onload..");
             Current_age = age || 1;
             ThisTask = nextTask
+            console.log("Current_age: ", Current_age);
             setDataAge(Current_age)
         } else if (whatPoint == "search") {
             console.log("else onload..");
@@ -279,16 +314,19 @@ export default function TasksScreen({ route, navigation }) {
             ThisTask = lastElement
             console.log("lastElement onloaddata: ", lastElement);
             setTaskArr(newArr)
+            console.log("Current_age: ", Current_age);
             setDataAge(Current_age)
         } else if (whatPoint == "refresh") {
-            Current_age == age;
+            Current_age = age;
             ThisTask = nextTask;
+            console.log("Current_age_refresh: ", Current_age);
             setDataAge(Current_age)
         }
 
         console.log("Current_age: ", Current_age);
 
         var taskfilter_ = (await getDataStorage("taskfilter")) || "Y";
+        console.log("taskfilter_: ", taskfilter_);
         if (taskfilter_ == "N") {
             setDataemty(false);
             setDataloadding(false);
@@ -301,8 +339,11 @@ export default function TasksScreen({ route, navigation }) {
         var searchValue_ = (await getDataStorage("tasksearchValue")) || "";
         var statusValue_ = (await getDataStorage("taskstatusValue")) || "";
         var timeValue_ = (await getDataStorage("TasksearchTime")) || "";
-        console.log("statusValue_: ", statusValue_);
+        // console.log("statusValue_: ", statusValue_);
         console.log("------->", timeValue_);
+        const statusValue = statusValue_ ? statusValue_.split(",") : [];
+        // console.log("statusValue: ", statusValue);
+        setStatusValue(statusValue);
 
         setSeachTime(!xt.isEmpty(timeValue_) ? JSON.parse(timeValue_) : "");
         setSeachValue(searchValue_);
@@ -373,6 +414,8 @@ export default function TasksScreen({ route, navigation }) {
             console.log("else....");
             try { // Api For NEW version 
 
+                console.log("asdasdasdasdsadsdfgdsfdsf: ", route.params.pre_event, route.params.plan_code, ThisTask);
+
                 // let url = `/Planning/Plan/app_plan_task_list_v4?pre_event=${route.params.pre_event || ""}&plan_code=${route.params.plan_code || ""}&taskid=${ThisTask}`
                 let url = `/Planning/Planning/CalculatePlan?pre_event=${route.params.pre_event}&plan_code=${route.params.plan_code}&taskid=${ThisTask}`;
                 console.log(`url next task ${age}: `, url);
@@ -380,6 +423,7 @@ export default function TasksScreen({ route, navigation }) {
                 console.log(`res next task ${age}: `, res);
                 // data_ = res.plan_auth;
                 data_ = $linq(res.data.data_task).where(task => task.taskid != "xxxxxxxxxx").toArray();
+                console.log("data001:", data_);
 
                 data_.forEach((v, i) => {
                     v.status = xt.getStatus2(v.status);
@@ -427,6 +471,9 @@ export default function TasksScreen({ route, navigation }) {
     const ForEachData = async (data, searchValue_, statusValue_, timeValue_) => {
         console.log("data ปัจจุบัญ: ", data);
         //v3
+
+        console.log("SearchValue: ", searchValue_, "statusValue: ", statusValue_, "timeValue: ", timeValue_);
+
 
         onFilter(data, searchValue_, statusValue_, timeValue_);
     };
@@ -477,71 +524,161 @@ export default function TasksScreen({ route, navigation }) {
         setAuth(auth);
 
     };
+
+    // const onFilter = async (data_, searchValue, statusValue, timeValue_) => {
+    //     console.log("data_ onFilter: ", data_);
+    //     console.log("statusValue ", statusValue);
+    //     if (timeValue_ != "") {
+    //         console.log("กรอง วัน");
+    //         const Time = JSON.parse(timeValue_);
+    //         console.log("searchTime ==================>", Time);
+    //         data_date = $linq(data_).where(w =>
+    //             (moment(w?.start_date2).format("YYYYMMDD") >= moment(Time.start_time).format("YYYYMMDD") &&
+    //                 moment(w?.start_date2).format("YYYYMMDD") <= moment(Time.end_time).format("YYYYMMDD")) ||
+    //             (moment(Time.start_time).format("YYYYMMDD") >= moment(w?.start_date2).format("YYYYMMDD") &&
+    //                 moment(Time.start_time).format("YYYYMMDD") <= moment(w?.end_date2).format("YYYYMMDD"))).toArray();
+    //     }
+    //     // console.log("data_ search date: ", data_date);
+
+    //     // console.log("data_ search date: ", data_);
+
+    //     const status_split = xt.isEmpty(statusValue) ? [] : statusValue.split(",");
+    //     setStatusValue(status_split);
+    //     if (searchValue || status_split.length != 0) {
+    //         const filterdata = data_
+    //             .filter((item) => status_split.includes(item.status))
+    //             .filter(function filter(c) {
+    //                 return (
+    //                     searchValue === "" ||
+    //                     c.taskname.toLowerCase().startsWith(searchValue.toLowerCase())
+    //                 );
+    //             });
+    //         if (filterdata.length != 0) {
+    //             setDataemty(false);
+    //             setDataArr(filterdata)
+    //         } else if(filterdata.length === 0) {
+    //             setDataArr(data_);
+    //             setDataemty(false);
+    //         }
+    //         // console.log("filterdata: ",filterdata);
+    //     } else {
+    //         console.log("dasdasd", data_);
+    //         setDataArr(data_);
+    //         if (data_.length != 0) {
+    //             setDataemty(false);
+    //         } else {
+    //             setDataemty(true);
+    //         }
+    //     }
+    //     setDataloadding(false);
+    // };
+
     const onFilter = async (data_, searchValue, statusValue, timeValue_) => {
         console.log("data_ onFilter: ", data_);
         console.log("statusValue ", statusValue);
-        if (timeValue_ != "") {
+
+        let data_1 = data_;
+
+        if (timeValue_ !== "") {
             console.log("กรอง วัน");
             const Time = JSON.parse(timeValue_);
             console.log("searchTime ==================>", Time);
-            data_ = $linq(data_).where(w =>
-                (moment(w?.start_date).format("YYYYMMDD") >= moment(Time.start_time).format("YYYYMMDD") &&
-                    moment(w?.start_date).format("YYYYMMDD") <= moment(Time.end_time).format("YYYYMMDD")) ||
-                (moment(Time.start_time).format("YYYYMMDD") >= moment(w?.start_date).format("YYYYMMDD") &&
-                    moment(Time.start_time).format("YYYYMMDD") <= moment(w?.end_date).format("YYYYMMDD"))).toArray();
+
+            data_1 = $linq(data_1).where(w =>
+                (moment(w?.start_date2).format("YYYYMMDD") >= moment(Time.time_start).format("YYYYMMDD") &&
+                    moment(w?.start_date2).format("YYYYMMDD") <= moment(Time.time_end).format("YYYYMMDD")) ||
+                (moment(Time.time_start).format("YYYYMMDD") >= moment(w?.start_date2).format("YYYYMMDD") &&
+                    moment(Time.time_start).format("YYYYMMDD") <= moment(w?.end_date2).format("YYYYMMDD"))
+            ).toArray();
+
+            console.log("Filter by date: ", data_1);
         }
+
         const status_split = xt.isEmpty(statusValue) ? [] : statusValue.split(",");
         setStatusValue(status_split);
-        if (searchValue || status_split.length != 0) {
-            const filterdata = data_
-                .filter((item) => status_split.includes(item.status))
-                .filter(function filter(c) {
-                    return (
-                        searchValue === "" ||
-                        c.taskname.toLowerCase().startsWith(searchValue.toLowerCase())
-                    );
-                });
-            if (filterdata.length != 0) {
-                setDataemty(false);
-            } else {
-                setDataemty(true);
-            }
-            // console.log("filterdata: ",filterdata);
-            setDataArr(filterdata)
 
+        if (status_split.length > 0) {
+            data_1 = data_1.filter(item => status_split.includes(item.status));
+        }
+
+        let filterData = data_1;
+        if (searchValue && searchValue.trim() !== '') {
+            filterData = data_1.filter(item =>
+                item.taskname.toLowerCase().includes(searchValue.toLowerCase())
+            );
+        }
+
+        if (filterData.length > 0) {
+            setDataemty(false);
+            setDataArr(filterData);
         } else {
-            console.log("dasdasd", data_);
-            setDataArr(data_);
-            if (data_.length != 0) {
+            if (searchValue || status_split.length > 0) {
+                await Promise.all([
+                    setDataStorage("tasksearchValue", ""),
+                    setDataStorage('TasksearchTime', ""),
+                    setDataStorage('taskstatusValue', "inprogress,notstart,overdue,delay")
+                ]);
+
+                Alert.alert(
+                    'ไม่พบข้อมูลที่ค้นหา',
+                    'ไม่พบข้อมูลที่ตรงกับคำค้นหา กรุณาลองใหม่อีกครั้ง',
+                    [{ text: 'ตกลง' }]
+                );
+
+                // แสดงข้อมูลทั้งหมด
+                setDataArr(data_);
                 setDataemty(false);
             } else {
-                setDataemty(true);
+                setDataArr(data_);
+                setDataemty(data_.length === 0);
             }
         }
+
         setDataloadding(false);
     };
+
     const goBack = () => {
+
+        //รีเซ็ตค่า
+        setDataStorage("tasksearchValue", ""),
+            setDataStorage("TasksearchTime", ""),
+            setDataStorage("taskstatusValue", "inprogress,notstart,overdue,delay"),
+            setDataStorage("taskfilter", "Y")
+
 
         let goheadNext = dataAge - 1;
         console.log("goheadNext: ", goheadNext);
 
         const newArr = [...taskArr]
+        console.log("newArr goBack Before: ", newArr);
+
         newArr.pop()
+
+        console.log("newArr goBack After: ", newArr);
+
 
         console.log("newArr goBack: ", newArr);
 
 
         let lastElement = newArr[newArr.length - 1];
 
-        console.log("lastElement: ", lastElement);
 
+        console.log('is Task Amount: ', isTaskAmount, isLastTask);
+
+        console.log("lastElement on Back: ", newArr[newArr.length - 1], 'Go head Next: ', goheadNext);
+
+        console.log("Current_age ererer: ", goheadNext);
+        setDataAge(goheadNext);
+        setTaskArr(newArr)
 
         if ((goheadNext == 1) && (lastElement == "0")) {
             console.log("ifback...");
+            console.log("Current_age: ", goheadNext);
             setDataAge(goheadNext)
             onloaddata(goheadNext, lastElement, "back");
         } else if ((goheadNext > 1) && (lastElement != "0")) {
             console.log("elseifback...");
+            console.log("Current_age: ", goheadNext);
             setDataAge(goheadNext)
             onloaddata(goheadNext, lastElement, "back");
         }
@@ -549,15 +686,15 @@ export default function TasksScreen({ route, navigation }) {
             console.log("else goback สุดท้าย...");
             navigation.goBack()
         }
-        setDataAge(goheadNext);
-        setTaskArr(newArr)
+
 
     };
+
     const checkConfirmUpdate = (item) => {
         // console.log("item checkConfirmUpdate: ",item); 
         if (usertype == "Employee") {
             const thatmyTaskArray = xt.isEmpty(item.owner_id) ? [] : item.owner_id.split(',');
-            console.log(thatmyTaskArray, "thatmyTaskArray");
+            // console.log(thatmyTaskArray, "thatmyTaskArray");
 
             if (item.hasChild == "N" && isUserRight == "N") {
                 return true;
@@ -586,7 +723,7 @@ export default function TasksScreen({ route, navigation }) {
                 return false;
             } else {
                 const thatmyTaskArray = xt.isEmpty(item.owner_id_outsource) ? [] : item.owner_id_outsource.split(',');
-                console.log("thatmyTaskArray: ", thatmyTaskArray);
+                // console.log("thatmyTaskArray: ", thatmyTaskArray);
                 if (item.hasChild == "N") {
                     if (thatmyTaskArray.length === 1) {
                         if (thatmyTaskArray[0] == isAuth.empno) {
@@ -611,7 +748,7 @@ export default function TasksScreen({ route, navigation }) {
     const checkUpdateProgress = (item) => {
         if (usertype == "Employee") { // Employee
             const thatmyTaskArray = xt.isEmpty(item.owner_id) ? [] : item.owner_id.split(',');
-            console.log("thatmyTaskArray: ", thatmyTaskArray);
+            // console.log("thatmyTaskArray: ", thatmyTaskArray);
             if (item.hasChild == "N" && isUserRight == "N") {
                 return (
                     <>
@@ -723,7 +860,7 @@ export default function TasksScreen({ route, navigation }) {
                 )
             } else {
                 const thatmyTaskArray = xt.isEmpty(item.owner_id_outsource) ? [] : item.owner_id_outsource.split(',');
-                console.log("thatmyTaskArray: ", thatmyTaskArray);
+                // console.log("thatmyTaskArray: ", thatmyTaskArray);
                 if (item.hasChild == "N") {
                     if (thatmyTaskArray.length === 1) {
                         if (thatmyTaskArray[0] == isAuth.empno) {
@@ -799,7 +936,7 @@ export default function TasksScreen({ route, navigation }) {
     const CheckUserMessageButton = (item) => {
         if (usertype == "Employee") { // Employee
             const thatmyTaskArray = xt.isEmpty(item.owner_id) ? [] : item.owner_id.split(',');
-            console.log("thatmyTaskArray: ", thatmyTaskArray);
+            // console.log("thatmyTaskArray: ", thatmyTaskArray);
             if (thatmyTaskArray.length === 1) {
                 if (thatmyTaskArray[0] == isAuth.empno) {
                     return (
@@ -849,7 +986,7 @@ export default function TasksScreen({ route, navigation }) {
             if (!xt.isEmpty(item.owner_id_outsource)) {
                 if (item.hasChild == "N") {
                     const thatmyTaskArray = xt.isEmpty(item.owner_id_outsource) ? [] : item.owner_id_outsource.split(',');
-                    console.log("thatmyTaskArray: ", thatmyTaskArray);
+                    // console.log("thatmyTaskArray: ", thatmyTaskArray);
                     if (thatmyTaskArray.length === 1) {
                         if (thatmyTaskArray[0] == isAuth.empno) {
                             return (
@@ -1045,7 +1182,7 @@ export default function TasksScreen({ route, navigation }) {
             if (!xt.isEmpty(item.owner_id_outsource)) {
                 if (item.hasChild == "N") {
                     const thatmyTaskArray = xt.isEmpty(item.owner_id_outsource) ? [] : item.owner_id_outsource.split(',');
-                    console.log("thatmyTaskArray: ", thatmyTaskArray);
+                    // console.log("thatmyTaskArray: ", thatmyTaskArray);
                     if (thatmyTaskArray.length === 1) {
                         if (thatmyTaskArray[0] == isAuth.empno) {
                             return (
@@ -1123,7 +1260,7 @@ export default function TasksScreen({ route, navigation }) {
         }
     };
     const onAssignList = (item) => {
-        console.log(item, "item");
+        // console.log(item, "item");
 
         navigation.navigate("EmployeeList", {
             site: dataServer,
@@ -1144,14 +1281,26 @@ export default function TasksScreen({ route, navigation }) {
     const renderFriendItem = ({ item, index }) => {
         if (index < 3) {
             return (
-                <View style={styles.friendItem}>
-                    <Avatar style={{ width: 38, height: 38 }} source={xt.getimg(dataServer, false, item.img)} />
+                <View style={[{
+                    borderColor: colors.greentree,
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    marginHorizontal: 0,
+                    borderWidth: 1,
+                    borderRadius: 50,
+                    width: 40,
+                    height: 40,
+                }]}>
+                    <Image
+                        style={{ width: 38, height: 38, borderRadius: 50 }}
+                        source={xt.getimg(dataServer, false, item.img)}
+                    />
                 </View>
             )
         }
-    };
+    }
     const renderItem = ({ item, index }) => {
-        console.log("item", item);
+        // console.log("item", item);
         return (
             <>
                 <TouchableOpacity style={[styles.blockcard, { flex: 1, top: '5%', width: '100%', backgroundColor: themes == 'light' ? colors.white : colors.font_dark }]}
@@ -1173,7 +1322,7 @@ export default function TasksScreen({ route, navigation }) {
                                     {/* {Number.isInteger(item.plan_per)
                                         ? item.plan_per
                                         : Number(xt.dec(item.plan_per, 2)).toFixed(route.params.decimal || global.decimal)} % */}
-                                    {Number(xt.dec(item.plan_per, 2)).toFixed(route.params.decimal || global.decimal)} %
+                                    {Number(xt.dec(item.plan_per, 2)).toFixed(2)} %
                                 </Text>
                             </Text>
                         </View>
@@ -1183,7 +1332,7 @@ export default function TasksScreen({ route, navigation }) {
                                     {/* {Number.isInteger(item.progress_per)
                                         ? item.progress_per
                                         : Number(xt.dec(item.progress_per, 2)).toFixed(route.params.decimal || global.decimal)} % */}
-                                    {Number(xt.dec(item.progress_per, 2)).toFixed(route.params.decimal || global.decimal)} %
+                                    {Number(xt.dec(item.progress_per, 2)).toFixed(2)} %
                                 </Text>
                             </Text>
                         </View>
@@ -1192,10 +1341,36 @@ export default function TasksScreen({ route, navigation }) {
                         </TouchableOpacity>
                     </View>
                     <View style={{ flex: 4, marginTop: 10, flex: 6, flexDirection: 'row', backgroundColor: themes == 'light' ? colors.white : colors.font_dark }}>
-                        <View style={{ flex: 4, flexDirection: 'row', alignItems: 'center' }}>
-                            <View style={{ width: 30, height: 30, backgroundColor: 'lime', borderRadius: 30, }}>
+                        <TouchableOpacity
+                            style={{ flex: 4, flexDirection: 'row', alignItems: 'center' }}
+                            onPress={() => onAssignList(item)}
+                        >
+                            <View style={{ flexDirection: 'row' }}>
+                                <FlatList
+                                    style={{ backgroundColor: 'transparent' }}
+                                    horizontal={true}
+                                    data={item.ow_list}
+                                    renderItem={renderFriendItem}
+                                    showsVerticalScrollIndicator={false}
+                                    showsHorizontalScrollIndicator={false}
+                                />
+                                {item.ow_list && item.ow_list.length > 3 &&
+                                    <View style={{
+                                        borderColor: colors.greentree,
+                                        borderWidth: 1,
+                                        borderRadius: 50,
+                                        width: 40,
+                                        height: 40,
+                                        alignItems: 'center',
+                                        justifyContent: 'center'
+                                    }}>
+                                        <Text style={{ color: themes == 'light' ? colors.black : colors.white }}>
+                                            +{item.ow_list.length - 3}
+                                        </Text>
+                                    </View>
+                                }
                             </View>
-                        </View>
+                        </TouchableOpacity>
                         <View style={{ flex: 6, flexDirection: 'row', }}>
                             <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'center' }}>
                                 <View style={{ flex: 4, alignItems: 'center' }}>
@@ -1227,21 +1402,29 @@ export default function TasksScreen({ route, navigation }) {
             {dataemty == false ? (
                 <>
                     {/* Status */}
-                    <View style={{ flexDirection: 'row', backgroundColor: themes == 'light' ? colors.white : colors.back_dark }}>
-                        <Text style={[styles.h5_bold, { marginLeft: 5, fontSize: 16, color: themes == 'light' ? colors.black : colors.white }]}>Status :</Text>
-                        <View style={{ flexDirection: 'row', width: width * 2 }}>
-                            <TouchableOpacity style={{ backgroundColor: '#8F9BB3', marginLeft: 5, alignItems: 'center', justifyContent: 'center' }}>
-                                <Text style={[styles.h5, { marginLeft: 5, fontSize: 14, color: themes == 'light' ? colors.black : colors.white }]}>In progress </Text>
-                            </TouchableOpacity>
-                            <TouchableOpacity style={{ backgroundColor: '#8F9BB3', marginLeft: 5, alignItems: 'center', justifyContent: 'center' }}>
-                                <Text style={[styles.h5, { marginLeft: 5, fontSize: 14, color: themes == 'light' ? colors.black : colors.white }]}>Not Start </Text>
-                            </TouchableOpacity>
-                            <TouchableOpacity style={{ backgroundColor: '#8F9BB3', marginLeft: 5, alignItems: 'center', justifyContent: 'center' }}>
-                                <Text style={[styles.h5, { marginLeft: 5, fontSize: 14, color: themes == 'light' ? colors.black : colors.white }]}>Delay </Text>
-                            </TouchableOpacity>
-                            <TouchableOpacity style={{ backgroundColor: '#8F9BB3', marginLeft: 5, alignItems: 'center', justifyContent: 'center' }}>
-                                <Text style={[styles.h5, { marginLeft: 5, fontSize: 14, color: themes == 'light' ? colors.black : colors.white }]}>Overdue </Text>
-                            </TouchableOpacity>
+                    <View style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: themes == 'light' ? colors.white : colors.back_dark }}>
+                        <View>
+                            <Text style={[styles.h5_bold, { marginLeft: 5, fontSize: 16, color: themes == 'light' ? colors.black : colors.white }]}>Status :</Text>
+                        </View>
+                        <View style={{ flexDirection: 'row', paddingRight: 10 }}>
+                            {statusValue.map((status, index) => (
+                                <View key={index} style={{
+                                    backgroundColor: '#38B34A',
+                                    marginLeft: 5,
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    padding: 5,
+                                    borderRadius: 10
+                                }}>
+                                    <Text style={[styles.h5, {
+                                        // marginLeft: 5,
+                                        fontSize: 12,
+                                        color: 'white'
+                                    }]}>
+                                        {status.charAt(0).toUpperCase() + status.slice(1)}
+                                    </Text>
+                                </View>
+                            ))}
                         </View>
                     </View>
                     <View style={{ top: '1%', paddingBottom: '5%' }}>

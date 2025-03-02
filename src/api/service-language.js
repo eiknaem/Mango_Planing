@@ -150,6 +150,8 @@ var langArr = {
     please_select_type: "กรุณาเลือก ประเภทผู้ใช้งาน",
     search_history: "ประวัติการค้นหาล่าสุด", 
     clear_history: "ล้างทั้งหมด",
+    todate: "ถึง",
+
   },
   "EN": {
     lang_wh: "en-US",
@@ -303,7 +305,8 @@ var langArr = {
     please_select_type: "Please Select User Type.",
     search_history: "Search History",
     clear_history: "Clear All",
-
+    todate: "to",
+    enter_remark: "Enter Remark",
   }
 }
 

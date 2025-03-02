@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { BackHandler, View, Platform } from "react-native";
+import { BackHandler, View, Platform, LogBox  } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import { ApplicationProvider } from "@ui-kitten/components";
@@ -36,12 +36,26 @@ import HeaderRight from "./src/components/headerRight";
 import HeaderLeft from "./src/components/headerLeft";
 import ProjectScreen from "./src/scenes/transition/project.component";
 import PlansScreen from "./src/scenes/transition/plans.component";
-import SearchScreen from "./src/scenes/transition/search.component";
+import ProjectsearchScreen from "./src/scenes/transition/projectSearch.component";
 import TasksScreen from "./src/scenes/transition/tasks.component"
+import SearchScreen from "./src/scenes/transition/search.component";
 // transitons
 import HomeLayout from "./src/template/home_layout";
 import SettingScreen from "./src/scenes/transition/setting.component";
 import ProfileScreen from "./src/scenes/transition/profile.component";
+import NotificationScreen from "./src/scenes/transition/notification.component";
+import EmployeeListScreen from "./src/scenes/transition/employee.component";
+
+//transition in Progress
+import ProgresstabScreen from "./src/scenes/transition/progresstabs.component";
+import KeyboardScreen from "./src/scenes/transition/keyboard.component";
+import ProgresshistoryScreen from "./src/scenes/transition/progresshistory.component";
+import CameraScreen from "./src/scenes/transition/camera.component";
+import CameraVideoScreen from "./src/scenes/transition/cameravideo.component";
+import ProgressScreen from "./src/scenes/transition/progress.component";
+import IncidenceScreen from "./src/scenes/transition/incidenc.component";
+import { S } from "@expo/html-elements";
+
 ////Potho////
 // import PassLogin from "./src/auth/passlogin";
 Notifications.setNotificationHandler({
@@ -51,6 +65,10 @@ Notifications.setNotificationHandler({
     shouldSetBadge: true,
   }),
 });
+
+LogBox.ignoreLogs([
+  'Support for defaultProps will be removed from memo components in a future major release',
+]);
 const Stack = createStackNavigator();
 export default function App({ }) {
   let [fontsLoaded] = useFonts({
@@ -233,6 +251,7 @@ export default function App({ }) {
   const renderSearch = () => {
     return (
       <>
+        <Stack.Screen name='ProjectSearch' component={ProjectsearchScreen} />
         <Stack.Screen name='Search' component={SearchScreen} />
       </>
     )
@@ -276,11 +295,20 @@ export default function App({ }) {
                   <Stack.Screen name="Login" component={Login} options={{ headerShown: false }} />
                   <Stack.Screen name='Setting' component={SettingScreen} />
                   <Stack.Screen name="Profile" component={ProfileScreen} />
+                  <Stack.Screen name="Notification" component={NotificationScreen} />
                   {/* // component */}
                   {renderProject()}
                   {renderPlan()}
                   {renderSearch()}
                   {renderTasks()}
+                  <Stack.Screen name='progressTab' component={ProgresstabScreen} />
+                  <Stack.Screen name='Progress' component={ProgressScreen} />
+                  <Stack.Screen name='Keyboard' component={KeyboardScreen} />
+                  <Stack.Screen name='Progresshistory' component={ProgresshistoryScreen} />
+                  <Stack.Screen name='Camera' component={CameraScreen} />
+                  <Stack.Screen name='CameraVideo' component={CameraVideoScreen} />
+                  <Stack.Screen name='Incidence' component={IncidenceScreen} />
+                  <Stack.Screen name='EmployeeList' component={EmployeeListScreen} />
                 </Stack.Navigator>
                 <UpdateVersion />
               </>
