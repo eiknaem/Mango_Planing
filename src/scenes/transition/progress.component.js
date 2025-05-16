@@ -173,18 +173,6 @@ export default function ProgressScreen({ route, navigation }) {
     navigation && navigation.navigate("Filesaddprogress", item);
   };
   const getFileInfo = async (fileURI) => {
-
-
-
-
-
-
-
-
-
-
-
-
     const fileInfo = await FileSystem.getInfoAsync(fileURI)
     return fileInfo
   }
@@ -816,7 +804,7 @@ export default function ProgressScreen({ route, navigation }) {
     });
     console.log("fff", rsp.data);
 
-    setSatapgimg([...rsp.data]);
+    setSatapgimg(rsp.data);
     //setSatapgimg(rsp.data);
   };
 
@@ -908,12 +896,12 @@ export default function ProgressScreen({ route, navigation }) {
   }
 
   return (
-    <SafeAreaView style={localStyles.container}>
+    <SafeAreaView style={[localStyles.container, { backgroundColor: themes === 'light' ? colors.white : colors.back_bg }]}>
 
       <ScrollView style={localStyles.scrollView}>
         {/* วันที่และปุ่มประวัติ */}
-        <View style={localStyles.dateHistoryRow}>
-          <Text style={localStyles.dateText}>
+        <View style={[localStyles.dateHistoryRow, { backgroundColor: themes === 'light' ? colors.white : colors.back_bg }]}>
+          <Text style={[localStyles.dateText, { color: themes == 'light' ? colors.black : colors.white }]}>
             {xt.getDate(new Date(), lang.lang_wh)}
           </Text>
           <TouchableOpacity
@@ -927,19 +915,19 @@ export default function ProgressScreen({ route, navigation }) {
         </View>
 
         {/* ชื่องาน */}
-        <View style={localStyles.taskRow}>
-          <Text style={localStyles.taskText} numberOfLines={2}>
+        <View style={[localStyles.taskRow, { backgroundColor: themes === 'light' ? colors.white : colors.back_bg }]}>
+          <Text style={[localStyles.taskText, { color: themes == 'light' ? colors.black : colors.white }]} numberOfLines={2}>
             {data.wbs_id} : {data.taskname} {data.unitname ? `(${data.unitname})` : ''}
           </Text>
           <TouchableOpacity onPress={onHeadertask}>
-            <Ionicons name="chevron-forward" size={24} color={colors.grey_t} />
+            <Ionicons name="chevron-forward" size={24} color={themes == 'light' ? colors.black : colors.white} />
           </TouchableOpacity>
         </View>
 
         {/* ความคืบหน้าปัจจุบัน */}
-        <View style={localStyles.progressRow}>
+        <View style={[localStyles.progressRow, { backgroundColor: themes === 'light' ? colors.white : colors.blueGreen_light }]}>
           <View style={localStyles.progressBox}>
-            <Text style={localStyles.progressLabel}>
+            <Text style={[localStyles.progressLabel, { color: themes == 'light' ? colors.black : colors.white }]} >
               {lang.actual || 'ความคืบหน้าจริง'} ({lang.qty || 'จำนวน'})
             </Text>
             <Text style={localStyles.progressValue}>
@@ -947,7 +935,7 @@ export default function ProgressScreen({ route, navigation }) {
             </Text>
           </View>
           <View style={localStyles.progressBox}>
-            <Text style={localStyles.progressLabel}>
+            <Text style={[localStyles.progressLabel, { color: themes == 'light' ? colors.black : colors.white }]}>
               {lang.actual || 'ความคืบหน้าจริง'} (%)
             </Text>
             <Text style={localStyles.progressValue}>
@@ -957,9 +945,9 @@ export default function ProgressScreen({ route, navigation }) {
         </View>
 
         {/* ยอดคงเหลือ */}
-        <View style={localStyles.balanceRow}>
+        <View style={[localStyles.balanceRow, { backgroundColor: themes === 'light' ? colors.white : colors.blue_light }]}>
           <View style={localStyles.balanceBox}>
-            <Text style={localStyles.balanceLabel}>
+            <Text style={[localStyles.balanceLabel, { color: themes == 'light' ? colors.black : colors.white }]}>
               {lang.balance || 'คงเหลือ'} ({lang.qty || 'จำนวน'})
             </Text>
             <Text style={localStyles.balanceValue}>
@@ -974,7 +962,7 @@ export default function ProgressScreen({ route, navigation }) {
             </TouchableOpacity>
           </View>
           <View style={localStyles.balanceBox}>
-            <Text style={localStyles.balanceLabel}>
+            <Text style={[localStyles.balanceLabel, { color: themes == 'light' ? colors.black : colors.white }]}>
               {lang.balance || 'คงเหลือ'} (%)
             </Text>
             <Text style={localStyles.balanceValue}>
@@ -991,7 +979,7 @@ export default function ProgressScreen({ route, navigation }) {
         </View>
 
         {/* อัพเดทความคืบหน้าใหม่ */}
-        <View style={localStyles.newProgressRow}>
+        <View style={[localStyles.newProgressRow, { backgroundColor: themes === 'light' ? colors.white : colors.back_bg }]}>
           <View style={localStyles.newProgressBox}>
             <Text style={localStyles.newProgressLabel}>
               {lang.new_progress || 'ความคืบหน้าใหม่'} ({lang.qty || 'จำนวน'})
@@ -1021,11 +1009,11 @@ export default function ProgressScreen({ route, navigation }) {
         </View>
 
         {/* ปัญหาที่พบ */}
-        <View style={localStyles.sectionContainer}>
+        <View style={[localStyles.sectionContainer, { backgroundColor: themes === 'light' ? colors.white : colors.back_bg }]}>
           <Text style={localStyles.sectionLabel}>
             {lang.incidence || 'ปัญหาที่พบ'}
           </Text>
-          <View style={localStyles.incidenceContainer}>
+          <View style={[localStyles.incidenceContainer, { backgroundColor: themes === 'light' ? colors.white : colors.back_bg }]}>
             {incidence && (
               <TouchableOpacity
                 style={localStyles.clearIncidence}
@@ -1050,7 +1038,7 @@ export default function ProgressScreen({ route, navigation }) {
         </View>
 
         {/* หมายเหตุ */}
-        <View style={localStyles.sectionContainer}>
+        <View style={[localStyles.sectionContainer, { backgroundColor: themes === 'light' ? colors.white : colors.back_bg }]}>
           <Text style={localStyles.sectionLabel}>
             {lang.remark || 'หมายเหตุ'}
           </Text>
@@ -1066,13 +1054,13 @@ export default function ProgressScreen({ route, navigation }) {
 
         {/* แนบรูปภาพ - แสดงถ้า PPN_UN_PGI_ALLOW ไม่ใช่ N */}
         {route.params?.config?.PPN_UN_PGI_ALLOW !== "N" && (
-          <View style={localStyles.attachmentSection}>
+          <View style={[localStyles.attachmentSection, { backgroundColor: themes === 'light' ? colors.white : colors.back_bg }]}>
             <View style={localStyles.attachmentHeader}>
               <Text style={localStyles.attachmentTitle}>{lang.text_img || 'รูปภาพ/วิดีโอ'}</Text>
               <ScrollView horizontal style={localStyles.attachmentButtons}>
                 {route.params?.config?.PPN_UPLOAD_SELECT_ALLOW !== "N" && (
                   <TouchableOpacity
-                    style={localStyles.attachButton}
+                    style={[localStyles.attachButton, { backgroundColor: themes === 'light' ? colors.white : colors.back_bg }]}
                     onPress={pickImage}
                   >
                     <Ionicons name="image-outline" size={20} color={colors.grey_t} />
@@ -1084,7 +1072,7 @@ export default function ProgressScreen({ route, navigation }) {
 
                 {route.params?.config?.PPN_UPLOAD_CAMARA_ALLOW !== "N" && (
                   <TouchableOpacity
-                    style={localStyles.attachButton}
+                    style={[localStyles.attachButton, { backgroundColor: themes === 'light' ? colors.white : colors.back_bg }]}
                     onPress={onCamara}
                   >
                     <Ionicons name="camera-outline" size={20} color={colors.grey_t} />
@@ -1096,7 +1084,7 @@ export default function ProgressScreen({ route, navigation }) {
 
                 {route.params?.config?.PPN_UPLOAD_VIDEO_ALLOW !== "N" && (
                   <TouchableOpacity
-                    style={localStyles.attachButton}
+                    style={[localStyles.attachButton, { backgroundColor: themes === 'light' ? colors.white : colors.back_bg }]}
                     onPress={onCameraVideo}
                     disabled={isBase64 === "Y"}
                   >
@@ -1109,7 +1097,7 @@ export default function ProgressScreen({ route, navigation }) {
               </ScrollView>
             </View>
 
-            {datapgimg.length > 0 ? (
+            {datapgimg.length != 0 ? (
               <FlatList
                 data={datapgimg}
                 renderItem={renderImage}
@@ -1153,7 +1141,7 @@ export default function ProgressScreen({ route, navigation }) {
 const localStyles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f8f9fa',
+    // backgroundColor: '#f8f9fa',
   },
   loadingContainer: {
     flex: 1,
@@ -1191,7 +1179,6 @@ const localStyles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 15,
     paddingVertical: 10,
-    backgroundColor: '#fff',
     marginBottom: 1,
   },
   dateText: {
@@ -1214,7 +1201,6 @@ const localStyles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 15,
     paddingVertical: 12,
-    backgroundColor: '#fff',
     marginBottom: 8,
   },
   taskText: {
@@ -1235,7 +1221,7 @@ const localStyles = StyleSheet.create({
   },
   progressLabel: {
     fontSize: 14,
-    color: colors.black_t,
+    // color: colors.black_t,
     marginBottom: 8,
   },
   progressValue: {
@@ -1245,7 +1231,7 @@ const localStyles = StyleSheet.create({
   },
   balanceRow: {
     flexDirection: 'row',
-    backgroundColor: '#fff5e7',
+    // backgroundColor: '#fff5e7',
     marginBottom: 1,
   },
   balanceBox: {
@@ -1256,7 +1242,7 @@ const localStyles = StyleSheet.create({
   },
   balanceLabel: {
     fontSize: 14,
-    color: colors.black_t,
+    // color: colors.black_t,
     marginBottom: 8,
   },
   balanceValue: {
@@ -1277,7 +1263,7 @@ const localStyles = StyleSheet.create({
   },
   newProgressRow: {
     flexDirection: 'row',
-    backgroundColor: '#fff',
+    // backgroundColor: '#fff',
     marginBottom: 8,
   },
   newProgressBox: {
@@ -1304,7 +1290,7 @@ const localStyles = StyleSheet.create({
     color: colors.blue_t,
   },
   sectionContainer: {
-    backgroundColor: '#fff',
+    // backgroundColor: '#fff',
     paddingHorizontal: 15,
     paddingTop: 12,
     paddingBottom: 15,
@@ -1322,7 +1308,7 @@ const localStyles = StyleSheet.create({
     borderColor: colors.border,
     borderRadius: 5,
     padding: 12,
-    backgroundColor: '#f9f9f9',
+    // backgroundColor: '#f9f9f9',
   },
   clearIncidence: {
     marginRight: 10,
@@ -1345,7 +1331,7 @@ const localStyles = StyleSheet.create({
     fontSize: 15,
   },
   attachmentSection: {
-    backgroundColor: '#fff',
+    // backgroundColor: '#fff',
     paddingHorizontal: 15,
     paddingTop: 12,
     paddingBottom: 100, // Extra padding at bottom to account for save button
@@ -1366,7 +1352,7 @@ const localStyles = StyleSheet.create({
   attachButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#f0f0f0',
+    // backgroundColor: '#f0f0f0',
     paddingHorizontal: 10,
     paddingVertical: 5,
     borderRadius: 15,

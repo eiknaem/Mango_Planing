@@ -35,17 +35,17 @@ export default function NoRows() {
         // transparent={true}
         // visible={isLoading}
         >
-            {!isLoading && (<View style={styles.container}>
+            <View style={styles.container}>
                 <View style={[styles.background, { backgroundColor: themeObject.colors.background, justifyContent: "center", alignItems: "center" }]}>
                     <ActivityIndicator size="large" color={"#02D667"} />
-                    <Text style={[styles.h4_bold, { marginTop: 10, color: themeObject.colors.text}]}>
+                    <Text style={[styles.h4_bold, { marginTop: 10, color: themeObject.colors.text }]}>
                         {lang.overlayNoRows}
                     </Text>
-                    <Text style={[styles.h5, { color: themeObject.colors.text}]}>
+                    <Text style={[styles.h5, { color: themeObject.colors.text }]}>
                         {lang.overlayNoRows_sub}
                     </Text>
                 </View>
-            </View>)}
+            </View>
         </Modal>
 
     );
