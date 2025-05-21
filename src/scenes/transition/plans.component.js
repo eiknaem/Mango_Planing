@@ -124,155 +124,292 @@ export default function PlansScreen({ route, navigation }) {
         setDataStorage('planfilter', "Y");
         onloaddata();
     };
+    // const onloaddata = async () => {
+
+    //     var planfilter_ = await getDataStorage("planfilter") || "Y";
+    //     var usertype_ = await getDataStorage("usertype");
+    //     console.log("usertype_ plan: ", usertype_);
+    //     setUsertype(usertype_)
+
+    //     if (planfilter_ == "N") {
+    //         setDataemty(false);
+    //         setDataloadding(false);
+    //         setDataStorage('planfilter', "Y");
+    //     } else {
+    //         setDataemty(true);
+    //         setDataArr([]);
+    //         setDataloadding(true)
+    //     }
+    //     var searchValue_ = await getDataStorage("plansearchValue") || "";
+    //     var statusValue_ = await getDataStorage("statusValue") || "";
+    //     var searchTime_ = await getDataStorage("searchTime") || "";
+    //     console.log("get searchTime_ --- >", searchTime_);
+
+    //     setSeachTime(!xt.isEmpty(searchTime_) ? JSON.parse(searchTime_) : "");
+    //     setSeachValue(searchValue_);
+
+    //     var data_ = [];
+    //     var testplan = [];
+
+    //     // Set api use version
+    //     try { // For New Api Version
+    //         const startAPI = Date.now();
+    //         let url = `/Planning/Planning/CalculateProject?pre_event=${route.params.pre_event}`;
+    //         var res = await xt.getServer(url);
+    //         console.log(`API Call took: ${Date.now() - startAPI}ms`);
+    //         console.log('Response Data Size:', JSON.stringify(res).length, 'bytes');
+
+    //         // console.log(res, 'resresresresresresresresresresresresresresres');
+    //         if (usertype_ == "Employee") {
+    //             let viewPPN = await CheckViewPPN();
+    //             setViewPPN(viewPPN)
+    //         }
+
+    //         data_ = $linq(res.data.data_array).select(y => {
+    //             let dataMain = $linq(y.value).where(da => da.taskid == "MAIN1234567890").firstOrDefault();
+
+    //             return dataMain;
+    //         }
+    //         ).toArray();
+
+    //         data_ = $linq(data_).orderByDescending(o => o.add_dt || null).toArray();
+    //         console.log(data_, "data_");
+
+    //         testplan = $linq(data_).where(y => (y.pn_active == "Y" || y.pn_active == null) && y.revise_status == "N").toArray();
+
+    //         testplan.forEach(async (v, i) => {
+    //             v.status = xt.getStatus2(v.status);
+    //             v.start_date_show = moment(v.start_date2).format('DD/MM/YYYY');
+    //             v.end_date_show = moment(v.end_date2).format('DD/MM/YYYY');
+    //             if (v.img) {
+    //                 const imgUrl = dataServer + "api/file/download/?download=false&id=" + v.img;
+    //                 v.img = imgUrl;
+    //             }
+    //         });
+
+    //         console.log("testplan ----------------------------->", testplan);
+    //         console.log("===================================== Plans use api new version =====================================");
+
+    //     } catch (error) { // For old api Version
+
+    //         if (usertype_ == "Employee") {
+    //             let viewPPN = await CheckViewPPN();
+    //             let url = "/Planning/Plan/app_plan_list3?pre_event=" + route.params.pre_event
+    //             var res = await xt.getServer(url);
+    //             // console.log("res v3", res);
+    //             data_ = res.plan_auth || res.data;
+    //             data_ = $linq(data_).orderByDescending(o => o.add_dt || null).toArray();
+    //             testplan = $linq(data_).where(y => (y.pn_active == "Y" || y.pn_active == null) && y.revise_status == "N").toArray()
+
+    //             setViewPPN(viewPPN)
+    //         } else if (usertype_ == "Outsource") {
+    //             // let url = "Planning/Plan/app_plan_list3?pre_event=" + route.params.pre_event
+    //             let url = "/Planning/Plan/app_plan_list?pre_event=" + route.params.pre_event
+    //             var res = await xt.getServer(url);
+    //             console.log("res plan no view ppn: ", res);
+    //             data_ = res.plan_auth || res.data;
+    //             data_ = $linq(data_).orderByDescending(o => o.add_dt || null).toArray();
+    //             testplan = $linq(data_).where(y => (y.pn_active == "Y" || y.pn_active == null) && y.revise_status == "N").toArray()
+    //         }
+
+    //         testplan.forEach(async (v, i) => {
+    //             v.status = xt.getStatus2(v.status);
+    //             v.start_date_show = moment(v.start_date2).format('DD/MM/YYYY');
+    //             v.end_date_show = moment(v.end_date2).format('DD/MM/YYYY');
+    //         });
+
+    //         let urlAction = `/Planning/plan/app_plan_data3?pre_event=${route.params.pre_event}&plan_code=`;
+    //         let rsp = await xt.getServer(urlAction);
+    //         console.log("rsp api: ", rsp);
+
+    //         testplan.forEach(obj => {
+    //             let matchingRspObj = rsp.plan_data.find(rspObj => rspObj.plan_code === obj.plan_code);
+    //             console.log("matchingRspObj : ", matchingRspObj);
+
+    //             if (matchingRspObj) {
+    //                 if (usertype == "Employee") {
+    //                     Object.assign(obj, {
+    //                         end_date: matchingRspObj.end_date,
+    //                         start_date: matchingRspObj.start_date,
+    //                         pv: matchingRspObj.pv,
+    //                         total_amt: matchingRspObj.contract_amt,
+    //                         plan_per: (matchingRspObj.pv_per >= 99.9999) ? xt.roundPlanPer(matchingRspObj.pv_per, route.params.decimal || global.decimal) : matchingRspObj.pv_per, //matchingRspObj.pv_per,
+    //                         progress_per: matchingRspObj.progress_per,
+    //                         ev_perB: matchingRspObj.progress_per_b,
+    //                         status: xt.getStatus2(matchingRspObj.status)
+    //                     });
+    //                 } else {
+    //                     Object.assign(obj, {
+    //                         end_date: matchingRspObj.end_date,
+    //                         start_date: matchingRspObj.start_date,
+    //                         pv: matchingRspObj.pv,
+    //                         total_amt: matchingRspObj.contract_amt,
+    //                         plan_per: (matchingRspObj.pv_per >= 99.9999) ? xt.roundPlanPer(matchingRspObj.pv_per, route.params.decimal || global.decimal) : matchingRspObj.pv_per, //matchingRspObj.pv_per,
+    //                         progress_per: matchingRspObj.progress_per,
+    //                         ev_perB: matchingRspObj.progress_per_b,
+    //                         status: xt.getStatus2(matchingRspObj.status)
+    //                     });
+    //                 }
+
+    //             }
+    //         });
+
+    //         console.log("===================================== Plans use api old version =====================================");
+    //     }
+
+    //     // data_ = res.data_array;
+
+    //     // testplan.forEach(async (v, i) => {
+    //     //   v.status = xt.getStatus2(v.status);
+    //     //   v.start_date_show = moment(v.start_date2).format('DD/MM/YYYY');
+    //     //   v.end_date_show = moment(v.end_date2).format('DD/MM/YYYY'); 
+    //     // });
+    //     console.log("datass_", testplan);
+    //     // console.log("data_", $linq(data_).where(x => x.planname == "test 03/03 v1"));
+
+    //     setDataArr(testplan)
+    //     setDataemty(false);
+    //     setDataloadding(false)
+    //     // onFilter(testplan, searchValue_, statusValue_, searchTime_)
+    //     loadPlanData(testplan, searchValue_, statusValue_, searchTime_);
+    // }
     const onloaddata = async () => {
+        try {
+            // Load local storage values
+            const [
+                planfilter_,
+                usertype_,
+                searchValue_,
+                statusValue_,
+                searchTime_
+            ] = await Promise.all([
+                getDataStorage("planfilter").then(val => val || "Y"),
+                getDataStorage("usertype"),
+                getDataStorage("plansearchValue").then(val => val || ""),
+                getDataStorage("statusValue").then(val => val || ""),
+                getDataStorage("searchTime").then(val => val || "")
+            ]);
 
-        var planfilter_ = await getDataStorage("planfilter") || "Y";
-        var usertype_ = await getDataStorage("usertype");
-        console.log("usertype_ plan: ", usertype_);
-        setUsertype(usertype_)
+            console.log("usertype_ plan: ", usertype_);
+            setUsertype(usertype_);
+            setSeachValue(searchValue_);
+            setSeachTime(!xt.isEmpty(searchTime_) ? JSON.parse(searchTime_) : "");
 
-        if (planfilter_ == "N") {
-            setDataemty(false);
-            setDataloadding(false);
-            setDataStorage('planfilter', "Y");
-        } else {
-            setDataemty(true);
-            setDataArr([]);
-            setDataloadding(true)
-        }
-        var searchValue_ = await getDataStorage("plansearchValue") || "";
-        var statusValue_ = await getDataStorage("statusValue") || "";
-        var searchTime_ = await getDataStorage("searchTime") || "";
-        console.log("get searchTime_ --- >", searchTime_);
-
-        setSeachTime(!xt.isEmpty(searchTime_) ? JSON.parse(searchTime_) : "");
-        setSeachValue(searchValue_);
-
-        var data_ = [];
-        var testplan = [];
-
-        // Set api use version
-        try { // For New Api Version
-            const startAPI = Date.now();
-            let url = `/Planning/Planning/CalculateProject?pre_event=${route.params.pre_event}`;
-            var res = await xt.getServer(url);
-            console.log(`API Call took: ${Date.now() - startAPI}ms`);
-            console.log('Response Data Size:', JSON.stringify(res).length, 'bytes');
-
-            // console.log(res, 'resresresresresresresresresresresresresresres');
-            if (usertype_ == "Employee") {
-                let viewPPN = await CheckViewPPN();
-                setViewPPN(viewPPN)
+            if (planfilter_ === "N") {
+                setDataemty(false);
+                setDataloadding(false);
+                setDataStorage("planfilter", "Y");
+            } else {
+                setDataemty(true);
+                setDataArr([]);
+                setDataloadding(true);
             }
 
-            data_ = $linq(res.data.data_array).select(y => {
-                let dataMain = $linq(y.value).where(da => da.taskid == "MAIN1234567890").firstOrDefault();
+            let data_ = [];
+            let testplan = [];
 
-                return dataMain;
-            }
-            ).toArray();
+            const useNewApi = async () => {
+                const url = `/Planning/Planning/CalculateProject?pre_event=${route.params.pre_event}`;
+                const startAPI = Date.now();
+                const res = await xt.getServer(url);
+                console.log("res useNewApi", res);
+                console.log(`API Call took: ${Date.now() - startAPI}ms`);
+                console.log("Response Data Size:", JSON.stringify(res).length, "bytes");
 
-            data_ = $linq(data_).orderByDescending(o => o.add_dt || null).toArray();
-            console.log(data_, "data_");
-
-            testplan = $linq(data_).where(y => (y.pn_active == "Y" || y.pn_active == null) && y.revise_status == "N").toArray();
-
-            testplan.forEach(async (v, i) => {
-                v.status = xt.getStatus2(v.status);
-                v.start_date_show = moment(v.start_date2).format('DD/MM/YYYY');
-                v.end_date_show = moment(v.end_date2).format('DD/MM/YYYY');
-                if (v.img) {
-                    const imgUrl = dataServer + "api/file/download/?download=false&id=" + v.img;
-                    v.img = imgUrl;
+                if (usertype_ === "Employee") {
+                    const viewPPN = await CheckViewPPN();
+                    setViewPPN(viewPPN);
                 }
-            });
 
-            console.log("testplan ----------------------------->", testplan);
-            console.log("===================================== Plans use api new version =====================================");
+                data_ = $linq(res.data.data_array)
+                    .select(y => $linq(y.value).where(d => d.taskid === "MAIN1234567890").firstOrDefault())
+                    .orderByDescending(o => o.add_dt || null)
+                    .toArray();
 
-        } catch (error) { // For old api Version
+                testplan = $linq(data_)
+                    .where(y => (y.pn_active === "Y" || y.pn_active === null) && y.revise_status === "N")
+                    .toArray();
 
-            if (usertype_ == "Employee") {
-                let viewPPN = await CheckViewPPN();
-                let url = "/Planning/Plan/app_plan_list3?pre_event=" + route.params.pre_event
-                var res = await xt.getServer(url);
-                // console.log("res v3", res);
-                data_ = res.plan_auth || res.data;
+                testplan.forEach(v => {
+                    v.status = xt.getStatus2(v.status);
+                    v.start_date_show = moment(v.start_date2).format("DD/MM/YYYY");
+                    v.end_date_show = moment(v.end_date2).format("DD/MM/YYYY");
+                    if (v.img) {
+                        v.img = `${dataServer}api/file/download/?download=false&id=${v.img}`;
+                    }
+                });
+
+                console.log("✅ Plans from new API:", testplan);
+            };
+
+            const useOldApi = async () => {
+                let res;
+                let viewPPN;
+                let url;
+
+                if (usertype_ === "Employee") {
+                    viewPPN = await CheckViewPPN();
+                    url = `/Planning/Plan/app_plan_list3?pre_event=${route.params.pre_event}`;
+                    setViewPPN(viewPPN);
+                } else {
+                    url = `/Planning/Plan/app_plan_list?pre_event=${route.params.pre_event}`;
+                }
+
+                res = await xt.getServer(url);
+                data_ = res.plan_auth || res.data || [];
                 data_ = $linq(data_).orderByDescending(o => o.add_dt || null).toArray();
-                testplan = $linq(data_).where(y => (y.pn_active == "Y" || y.pn_active == null) && y.revise_status == "N").toArray()
+                testplan = $linq(data_)
+                    .where(y => (y.pn_active === "Y" || y.pn_active === null) && y.revise_status === "N")
+                    .toArray();
 
-                setViewPPN(viewPPN)
-            } else if (usertype_ == "Outsource") {
-                // let url = "Planning/Plan/app_plan_list3?pre_event=" + route.params.pre_event
-                let url = "/Planning/Plan/app_plan_list?pre_event=" + route.params.pre_event
-                var res = await xt.getServer(url);
-                console.log("res plan no view ppn: ", res);
-                data_ = res.plan_auth || res.data;
-                data_ = $linq(data_).orderByDescending(o => o.add_dt || null).toArray();
-                testplan = $linq(data_).where(y => (y.pn_active == "Y" || y.pn_active == null) && y.revise_status == "N").toArray()
-            }
+                testplan.forEach(v => {
+                    v.status = xt.getStatus2(v.status);
+                    v.start_date_show = moment(v.start_date2).format("DD/MM/YYYY");
+                    v.end_date_show = moment(v.end_date2).format("DD/MM/YYYY");
+                });
 
-            testplan.forEach(async (v, i) => {
-                v.status = xt.getStatus2(v.status);
-                v.start_date_show = moment(v.start_date2).format('DD/MM/YYYY');
-                v.end_date_show = moment(v.end_date2).format('DD/MM/YYYY');
-            });
+                const rsp = await xt.getServer(`/Planning/plan/app_plan_data3?pre_event=${route.params.pre_event}&plan_code=`);
+                console.log("rsp api: ", rsp);
 
-            let urlAction = `/Planning/plan/app_plan_data3?pre_event=${route.params.pre_event}&plan_code=`;
-            let rsp = await xt.getServer(urlAction);
-            console.log("rsp api: ", rsp);
-
-            testplan.forEach(obj => {
-                let matchingRspObj = rsp.plan_data.find(rspObj => rspObj.plan_code === obj.plan_code);
-                console.log("matchingRspObj : ", matchingRspObj);
-
-                if (matchingRspObj) {
-                    if (usertype == "Employee") {
+                testplan.forEach(obj => {
+                    const match = rsp.plan_data.find(p => p.plan_code === obj.plan_code);
+                    if (match) {
                         Object.assign(obj, {
-                            end_date: matchingRspObj.end_date,
-                            start_date: matchingRspObj.start_date,
-                            pv: matchingRspObj.pv,
-                            total_amt: matchingRspObj.contract_amt,
-                            plan_per: (matchingRspObj.pv_per >= 99.9999) ? xt.roundPlanPer(matchingRspObj.pv_per, route.params.decimal || global.decimal) : matchingRspObj.pv_per, //matchingRspObj.pv_per,
-                            progress_per: matchingRspObj.progress_per,
-                            ev_perB: matchingRspObj.progress_per_b,
-                            status: xt.getStatus2(matchingRspObj.status)
-                        });
-                    } else {
-                        Object.assign(obj, {
-                            end_date: matchingRspObj.end_date,
-                            start_date: matchingRspObj.start_date,
-                            pv: matchingRspObj.pv,
-                            total_amt: matchingRspObj.contract_amt,
-                            plan_per: (matchingRspObj.pv_per >= 99.9999) ? xt.roundPlanPer(matchingRspObj.pv_per, route.params.decimal || global.decimal) : matchingRspObj.pv_per, //matchingRspObj.pv_per,
-                            progress_per: matchingRspObj.progress_per,
-                            ev_perB: matchingRspObj.progress_per_b,
-                            status: xt.getStatus2(matchingRspObj.status)
+                            end_date: match.end_date,
+                            start_date: match.start_date,
+                            pv: match.pv,
+                            total_amt: match.contract_amt,
+                            plan_per: (match.pv_per >= 99.9999)
+                                ? xt.roundPlanPer(match.pv_per, route.params.decimal || global.decimal)
+                                : match.pv_per,
+                            progress_per: match.progress_per,
+                            ev_perB: match.progress_per_b,
+                            status: xt.getStatus2(match.status)
                         });
                     }
+                });
 
-                }
-            });
+                console.log("✅ Plans from old API:", testplan);
+            };
 
-            console.log("===================================== Plans use api old version =====================================");
+            // Try new API, fallback to old if error
+            try {
+                await useNewApi();
+            } catch (err) {
+                console.warn("❗ Fallback to old API due to error:", err);
+                await useOldApi();
+            }
+
+            setDataArr(testplan);
+            setDataemty(false);
+            setDataloadding(false);
+            loadPlanData(testplan, searchValue_, statusValue_, searchTime_);
+        } catch (e) {
+            console.error("🚨 Failed to load data:", e);
+            setDataloadding(false);
         }
+    };
 
-        // data_ = res.data_array;
-
-        // testplan.forEach(async (v, i) => {
-        //   v.status = xt.getStatus2(v.status);
-        //   v.start_date_show = moment(v.start_date2).format('DD/MM/YYYY');
-        //   v.end_date_show = moment(v.end_date2).format('DD/MM/YYYY'); 
-        // });
-        console.log("datass_", testplan);
-        // console.log("data_", $linq(data_).where(x => x.planname == "test 03/03 v1"));
-
-        setDataArr(testplan)
-        setDataemty(false);
-        setDataloadding(false)
-        // onFilter(testplan, searchValue_, statusValue_, searchTime_)
-        loadPlanData(testplan, searchValue_, statusValue_, searchTime_);
-    }
     const renderItem = ({ item, index }) => {
         // console.log("item", item);
         return (
@@ -310,11 +447,11 @@ export default function PlansScreen({ route, navigation }) {
                         </View>
                     </View>
                     <View style={{ flex: 4, marginTop: 10, flex: 6, flexDirection: 'row', backgroundColor: themes == 'light' ? colors.white : colors.font_dark }}>
-                        <TouchableOpacity 
-                        onPress={() => onAssignList(item)}
-                        style={{ flex: 4, flexDirection: 'row', alignItems: 'center' }}>
+                        <View
+                            style={{ flex: 4, flexDirection: 'row', alignItems: 'center' }}>
                             {item.ow_list.map((owner, index) => (
-                                <View
+                                <TouchableOpacity
+                                    onPress={() => onAssignList(item)}
                                     key={index}
                                     style={{
                                         width: 30,
@@ -338,7 +475,7 @@ export default function PlansScreen({ route, navigation }) {
                                                 : require("../../../assets/images/user.png")
                                         }
                                     />
-                                </View>
+                                </TouchableOpacity>
                             ))}
                             {item.ow_list.length > 3 && (
                                 <View style={{
@@ -355,7 +492,7 @@ export default function PlansScreen({ route, navigation }) {
                                     </Text>
                                 </View>
                             )}
-                        </TouchableOpacity>
+                        </View>
 
 
                         {/* เพิ่มส่วน Start Date, End Date */}
@@ -564,30 +701,30 @@ export default function PlansScreen({ route, navigation }) {
                 <>
                     {/* Status */}
                     <View style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: themes == 'light' ? colors.white : colors.back_dark }}>
-                                            <View>
-                                                <Text style={[styles.h5_bold, { marginLeft: 5, fontSize: 16, color: themes == 'light' ? colors.black : colors.white }]}>Status :</Text>
-                                            </View>
-                                            <View style={{ flexDirection: 'row', paddingRight: 10 }}>
-                                                {statusValue.map((status, index) => (
-                                                    <View key={index} style={{
-                                                        backgroundColor: '#38B34A',
-                                                        marginLeft: 5,
-                                                        alignItems: 'center',
-                                                        justifyContent: 'center',
-                                                        padding: 5,
-                                                        borderRadius: 10
-                                                    }}>
-                                                        <Text style={[styles.h5, {
-                                                            // marginLeft: 5,
-                                                            fontSize: 12,
-                                                            color: 'white'
-                                                        }]}>
-                                                            {status.charAt(0).toUpperCase() + status.slice(1)}
-                                                        </Text>
-                                                    </View>
-                                                ))}
-                                            </View>
-                                        </View>
+                        <View>
+                            <Text style={[styles.h5_bold, { marginLeft: 5, fontSize: 16, color: themes == 'light' ? colors.black : colors.white }]}>Status :</Text>
+                        </View>
+                        <View style={{ flexDirection: 'row', paddingRight: 10 }}>
+                            {statusValue.map((status, index) => (
+                                <View key={index} style={{
+                                    backgroundColor: '#38B34A',
+                                    marginLeft: 5,
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    padding: 5,
+                                    borderRadius: 10
+                                }}>
+                                    <Text style={[styles.h5, {
+                                        // marginLeft: 5,
+                                        fontSize: 12,
+                                        color: 'white'
+                                    }]}>
+                                        {status.charAt(0).toUpperCase() + status.slice(1)}
+                                    </Text>
+                                </View>
+                            ))}
+                        </View>
+                    </View>
                     <View style={{ top: '1%', paddingBottom: '5%' }}>
                         <FlatList
                             data={dataArr}

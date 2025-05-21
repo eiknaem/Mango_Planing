@@ -316,25 +316,49 @@ export default function ProjectScreen({ route, navigation }) {
         }
         setDataloadding(false);
     };
-    const onReadNotification = async () => {
-        console.log("Start onReadNotification");
-        setLoadfile(true);
-        console.log("setLoadfile(true)");
+    // const onReadNotification = async () => {
+    //     console.log("Start onReadNotification");
+    //     setLoadfile(true);
+    //     console.log("setLoadfile(true)");
 
+    //     try {
+    //         let res2 = await xt.showAllNoti();
+    //         console.log(res2, "allNotiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii");
+    //         let cleanData = $linq(res2)
+    //             .where(x => x.read_timestamp == null || x.count_d > 0 || x.count_e > 0 || x.count_s > 0)
+    //             .toArray();
+    //         console.log(cleanData, "Filtered Notifications");
+    //         setCountNoti(cleanData.length);
+    //         setDataNoti(cleanData);
+    //         setLoadfile(false);
+    //     } catch (error) {
+    //         console.log("Error in onReadNotification:", error);
+    //     }
+    // };
+    const onReadNotification = async () => {
+        console.log("📩 Start onReadNotification");
+        setLoadfile(true);
+      
         try {
-            let res2 = await xt.showAllNoti();
-            console.log(res2, "allNotiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii");
-            let cleanData = $linq(res2)
-                .where(x => x.read_timestamp == null || x.count_d > 0 || x.count_e > 0 || x.count_s > 0)
-                .toArray();
-            console.log(cleanData, "Filtered Notifications");
-            setCountNoti(cleanData.length);
-            setDataNoti(cleanData);
-            setLoadfile(false);
+          const res = await xt.showAllNoti();
+          console.log("🔔 All Notifications:", res);
+      
+          const cleanData = $linq(res)
+            .where(x => x.read_timestamp == null || x.count_d > 0 || x.count_e > 0 || x.count_s > 0)
+            .toArray();
+      
+          console.log("✅ Filtered Notifications:", cleanData);
+      
+          setCountNoti(cleanData.length);
+          setDataNoti(cleanData);
         } catch (error) {
-            console.log("Error in onReadNotification:", error);
+          console.error("❌ Error in onReadNotification:", error);
+        } finally {
+          setLoadfile(false);
+          console.log("📴 setLoadfile(false)");
         }
-    };
+      };
+      
 
     const onLoadAuth = async () => {
         let server_data = (await apiAuth.getAuth()).data;

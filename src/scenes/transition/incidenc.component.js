@@ -15,7 +15,7 @@ import { styles, colors } from "../../stylesheet/styles";
 import { xt, getDataStorage, setDataStorage } from "../../api/service";
 import LoadingRows from "../../components/loadingRows";
 import NoRows from "../../components/noRows";
-
+import { useTheme } from "../../components/themeProvider";
 const { width, height } = Dimensions.get("window");
 
 export default function IncidenceScreen({ route, navigation }) {
@@ -26,6 +26,7 @@ export default function IncidenceScreen({ route, navigation }) {
     const [dataIncidents, setDataIncidents] = useState([]);
     const [isEmpty, setIsEmpty] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
+    const { themeObject } = useTheme();
 
     const headerLeft = () => (
         <View style={{ flexDirection: 'row', width: width * 0.2, height: height * 0.04, justifyContent: "center", alignItems: "center" }}>
@@ -33,7 +34,7 @@ export default function IncidenceScreen({ route, navigation }) {
                 style={{ marginRight: '20%', justifyContent: "center", alignItems: "center" }}
                 onPress={() => navigation.goBack()}
             >
-                <Ionicons name="chevron-back" size={24} color={colors.black} />
+                <Ionicons name="chevron-back" size={24} color={themeObject.colors.text} />
             </TouchableOpacity>
         </View>
     );
@@ -41,16 +42,12 @@ export default function IncidenceScreen({ route, navigation }) {
     useLayoutEffect(() => {
         navigation.setOptions({
             title: "Update Progress",
-            headerStyle: {
-                backgroundColor: themes === 'light' ? colors.white : colors.back_bg,
-                shadowColor: "transparent",
-                elevation: 0,
-            },
+            headerStyle: { backgroundColor: themeObject.colors.background },
+            headerTintColor: themeObject.colors.text,
             headerTitleAlign: "center",
             headerTitleStyle: {
                 fontWeight: "bold",
             },
-            headerTintColor: themes === 'light' ? colors.black : colors.white, // แก้ไขตรงนี้
 
             headerLeft: () => headerLeft(),
         });
@@ -100,12 +97,27 @@ export default function IncidenceScreen({ route, navigation }) {
 
     const renderItem = ({ item }) => (
         <TouchableOpacity
-            style={localStyles.itemContainer}
+            style={{
+                marginVertical: 4,
+                borderRadius: 8,
+                backgroundColor: themeObject.colors.card,
+                overflow: "hidden",
+                elevation: 1,
+                shadowColor: "#000",
+                shadowOffset: { width: 0, height: 1 },
+                shadowOpacity: 0.1,
+                shadowRadius: 2,
+            }}
             onPress={() => onItemPress(item)}
         >
             <View style={localStyles.itemContent}>
                 <Text
-                    style={localStyles.itemText}
+                    style={{
+                        fontSize: 16,
+                        flex: 1,
+                        marginRight: 10,
+                        color: themeObject.colors.text,
+                    }}
                     numberOfLines={2}
                 >
                     {item.desc_name}
@@ -129,11 +141,20 @@ export default function IncidenceScreen({ route, navigation }) {
     }
 
     return (
-        <SafeAreaView style={localStyles.container}>
+        <SafeAreaView
+            style={{
+                flex: 1,
+                backgroundColor: themeObject.colors.background
+            }}>
             {isEmpty ? (
                 <View style={localStyles.emptyContainer}>
                     <NoRows />
-                    <Text style={localStyles.emptyText}>
+                    <Text
+                        style={{
+                            fontSize: 16,
+                            marginTop: 20,
+                            color: themeObject.colors.text,
+                        }}>
                         {lang.not_data || "ไม่พบข้อมูล"}
                     </Text>
                 </View>
@@ -150,10 +171,6 @@ export default function IncidenceScreen({ route, navigation }) {
 }
 
 const localStyles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: '#f5f5f5',
-    },
     loadingContainer: {
         flex: 1,
         justifyContent: "center",

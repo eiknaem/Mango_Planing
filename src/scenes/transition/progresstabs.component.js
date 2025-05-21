@@ -32,7 +32,7 @@ import $xt from "../../api/xtools";
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 
 import ProgressScreen from "./progress.component";
-
+import { useTheme } from "../../components/themeProvider";
 export default function ProgresstabScreen({ route, navigation }) {
 
     const Params = route.params;
@@ -41,7 +41,25 @@ export default function ProgresstabScreen({ route, navigation }) {
     const [lang, setLang] = useState({});
     const [themes, setthemes] = useState("");
     const { width, height } = Dimensions.get('window');
+    const { themeObject } = useTheme();
 
+     useLayoutEffect(() => {
+        navigation.setOptions({
+            title: "Update Progress",
+            headerStyle: {
+                backgroundColor: themeObject.colors.background,
+                headerTintColor: themeObject.colors.text,
+                shadowColor: "transparent",
+                elevation: 0,
+            },
+            headerTitleAlign: "center",
+            headerTitleStyle: {
+                fontWeight: "bold",
+            },
+            headerLeft: () => headerLeft(),
+            headerRight: () => headerRight(),
+        });
+    }, [navigation, themes]);
 
     const headerLeft = () => (
         <View style={{ flexDirection: 'row', width: width * 0.2, height: height * 0.04, justifyContent: "center", alignItems: "center" }}>
@@ -105,25 +123,6 @@ export default function ProgresstabScreen({ route, navigation }) {
     useEffect(() => { // เริ่มต้นการทำงาน
         getLangDF();
     }, []);
-
-    useLayoutEffect(() => {
-        navigation.setOptions({
-            title: "Update Progress",
-            headerStyle: {
-                backgroundColor: themes === 'light' ? colors.white : colors.back_bg,
-                shadowColor: "transparent",
-                elevation: 0,
-            },
-            headerTitleAlign: "center",
-            headerTitleStyle: {
-                fontWeight: "bold",
-            },
-            headerTintColor: themes === 'light' ? colors.black : colors.white, // แก้ไขตรงนี้
-
-            headerLeft: () => headerLeft(),
-            headerRight: () => headerRight(),
-        });
-    }, [navigation, themes]);
 
     const TopTab = createMaterialTopTabNavigator();
 

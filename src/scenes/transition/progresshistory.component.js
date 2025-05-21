@@ -22,7 +22,7 @@ import LoadingRows from "../../components/loadingRows";
 import NoRows from "../../components/noRows";
 import moment from 'moment';
 import ImageViewer from 'react-native-image-zoom-viewer';
-
+import { useTheme } from "../../components/themeProvider";
 export default function ProgresshistoryScreen({ route, navigation }) {
     const $linq = arr => new linq(arr);
     const [lang, setLang] = useState({});
@@ -33,18 +33,22 @@ export default function ProgresshistoryScreen({ route, navigation }) {
     const [openGallery, setGallery] = useState(false);
     const [isIndex, setIndex] = useState(0);
     const { width, height } = Dimensions.get('window');
+    const { themeObject } = useTheme();
 
     useLayoutEffect(() => {
         navigation.setOptions({
             title: lang.progress_history || 'ประวัติการอัปเดตความคืบหน้า',
+            headerStyle: { backgroundColor: themeObject.colors.background },
+            headerTintColor: themeObject.colors.text,
             headerTitleAlign: 'center',
             headerLeft: () => (
-                <TouchableOpacity
-                    onPress={() => navigation.goBack()}
-                    style={{ padding: 15 }}
-                >
-                    <Ionicons name="arrow-back" size={24} color={colors.black_t} />
-                </TouchableOpacity>
+                <View style={{ flexDirection: 'row', width: width * 0.2, height: height * 0.04, justifyContent: "center", alignItems: "center" }}>
+                    <TouchableOpacity style={{ marginRight: '20%', justifyContent: "center", alignItems: "center", }}
+                        onPress={() => goBack()}
+                    >
+                        <Ionicons name="chevron-back" size={24} color={themeObject.colors.text} />
+                    </TouchableOpacity>
+                </View>
             )
         });
     }, [navigation, lang]);
@@ -134,7 +138,17 @@ export default function ProgresshistoryScreen({ route, navigation }) {
     );
 
     const renderProgressItem = ({ item }) => (
-        <View style={localStyles.progressItem}>
+        <View style={{
+            backgroundColor: themeObject.colors.card,
+            borderRadius: 8,
+            marginBottom: 10,
+            padding: 12,
+            shadowColor:themeObject.colors.border,
+            shadowOffset: { width: 0, height: 1 },
+            shadowOpacity: 0.1,
+            shadowRadius: 2,
+            elevation: 2,
+        }}>
             <View style={localStyles.progressRow}>
                 <View style={localStyles.progressInfoLeft}>
                     <Text style={localStyles.progressLabel}>
@@ -245,7 +259,10 @@ export default function ProgresshistoryScreen({ route, navigation }) {
     }
 
     return (
-        <SafeAreaView style={localStyles.container}>
+        <SafeAreaView style={{
+            flex: 1,
+            backgroundColor: themeObject.colors.background
+        }}>
             {dataprogresshistory.length > 0 ? (
                 <FlatList
                     data={dataprogresshistory}
@@ -366,7 +383,7 @@ const localStyles = StyleSheet.create({
         top: 30,
     },
     backButton: {
-        padding: 10, 
+        padding: 10,
         alignSelf: 'flex-start'
     },
     backText: {

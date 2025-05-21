@@ -29,7 +29,6 @@ export default function Layout({ props, navigation, }) {
     return (
         isLoadding && <View style={{ backgroundColor: isTheme?.head || colors.red, flex: 1, zIndex: 10 }}>
             <SafeAreaView style={[styles.container_layout]}>
-                <StatusBar barStyle={'light-content'} />
                 {props}
             </SafeAreaView>
         </View>

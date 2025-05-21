@@ -297,8 +297,8 @@ const service = {
     return result
   },
   getStatus3(obj) { // ใช้ progress b
-    console.log("obj333333333333: ",obj);
-    
+    console.log("obj333333333333: ", obj);
+
     var end_d = moment(obj.end_date).format('YYYY-MM-DD');
     var today_d = moment(new Date()).format('YYYY-MM-DD');
     console.log("end_d: ", end_d);
@@ -329,16 +329,16 @@ const service = {
       if ($xt.dec(task.progress_per_b, 2) == 100) {
         return "complete";
       } else if ($xt.dec(task.pv_per, 2) == 0 && $xt.dec(task.progress_per_b, 2) == 0) {
-        if($xt.isEmpty(task.progress_per_b)){
-          if(task.progress_per > 0){
+        if ($xt.isEmpty(task.progress_per_b)) {
+          if (task.progress_per > 0) {
             return "inprogress"
-          }else{
+          } else {
             return "notstart";
           }
-        }else{
+        } else {
           return "notstart";
         }
-        
+
       }
       else if ($xt.dec(task.progress_per_b, 2) >= $xt.dec(task.pv_per, 2)) {
         return task.status = "inprogress";
@@ -387,8 +387,9 @@ const service = {
       console.log(ex);
     }
   },
-  roundPlanPer(a, b){
-    let factor = Math.pow(10, b-1);
+  
+  roundPlanPer(a, b) {
+    let factor = Math.pow(10, b - 1);
     let result = Math.round(a * factor) / factor;
     return result;
   },

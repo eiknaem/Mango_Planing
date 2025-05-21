@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
+import { StatusBar,Platform } from "react-native";
 import { DefaultTheme, DarkTheme } from "@react-navigation/native";
 import { getDataStorage, setDataStorage } from "../api/service"; // ฟังก์ชันเก็บค่า theme ใน storage
 import { colors } from "../stylesheet/styles";
@@ -52,6 +53,12 @@ export const ThemeProvider = ({ children }) => {
 
     return (
         <ThemeContext.Provider value={{ theme, themeObject, toggleTheme }}>
+            <StatusBar
+                barStyle={theme === "light" ? "dark-content" : "light-content"}
+                backgroundColor={
+                    Platform.OS === "android" ? themeObject.colors.background : undefined
+                  }
+            />
             {children}
         </ThemeContext.Provider>
     );

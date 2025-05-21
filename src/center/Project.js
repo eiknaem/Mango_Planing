@@ -149,7 +149,6 @@ export default function Project({ route, navigation }) {
   };
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar style="light" />
       <View style={styles.header}></View>
       {loading ? <LoaddingLayout /> : null}
       {searchBar()}
