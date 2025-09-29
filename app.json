@@ -29,7 +29,10 @@
             "usesCleartextTraffic": true
           }
         }
-      ]
+      ],
+      "expo-font",
+      "expo-asset",
+      "expo-secure-store"
     ],
     "android": {
       "package": "com.mangoconsultant.mango.plan",

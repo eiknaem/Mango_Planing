@@ -1,5 +1,7 @@
+import { Buffer } from 'buffer';
+global.Buffer = global.Buffer || Buffer;
 import React, { useState, useEffect, useRef } from "react";
-import { BackHandler, View, Platform, LogBox  } from "react-native";
+import { BackHandler, View, Platform, LogBox } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import { ApplicationProvider } from "@ui-kitten/components";
@@ -264,7 +266,7 @@ export default function App({ }) {
       </>
     )
   }
-  
+
   AppContent = () => {
     const { themeObject } = useTheme();
     return (
