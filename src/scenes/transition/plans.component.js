@@ -423,7 +423,7 @@ export default function PlansScreen({ route, navigation }) {
                             <Text style={[styles.h4, { marginLeft: 5, fontSize: 14, color: themes == 'light' ? colors.black : colors.white }]}>{lang.planname} : {item.planname} </Text>
                         </View>
                         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'flex-end', paddingEnd: 20 }}>
-                            <Text style={[styles.h5_bold, { backgroundColor: colors.red, width: 90, height: 25, borderRadius: 5, marginLeft: 5, fontSize: 14, textAlign: 'center', color: themes == 'light' ? colors.black : colors.white }]}> {item.status}</Text>
+                            <Text style={[styles.h5_bold, { backgroundColor: colors.red, width: 90, height: 25, borderRadius: 5, marginLeft: 5, fontSize: 14, textAlign: 'center', color: themes == 'light' ? colors.white : colors.black }]}> {item.status}</Text>
                         </View>
                     </View>
                     <View style={{ flex: 2, flexDirection: 'row' }}>

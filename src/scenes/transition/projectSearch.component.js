@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useLayoutEffect } from 'react';
-import { View, Text, StyleSheet, TextInput, ScrollView, TouchableOpacity, Alert } from 'react-native';
+import { View, Text, StyleSheet, TextInput, ScrollView, TouchableOpacity, Alert, FlatList } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { color } from '../../stylesheet/colors';
 import { font } from '../../stylesheet/fonts';
@@ -35,22 +35,22 @@ export default function ProjectsearchScreen({ route, navigation }) {
 
     const handleSearch = async (value) => {
         const searchText = value || searchValue;
-        
+
         if (searchText.trim()) {
             await setDataStorage("ProjectsearchValue", searchText);
             await setDataStorage("Projectfilter", "Y"); // เพิ่มบรรทัดนี้
-            
+
             // บันทึกประวัติ
             const newHistory = [searchText, ...searchHistory.filter(h => h !== searchText)];
             setSearchHistory(newHistory);
             await setDataStorage('Project_history', JSON.stringify(newHistory));
-            
+
             navigation.goBack();
         }
     };
-    
+
     const goBack = async () => {
-        await setDataStorage("Projectfilter", "N"); 
+        await setDataStorage("Projectfilter", "N");
         navigation.goBack();
     };
 
@@ -92,10 +92,9 @@ export default function ProjectsearchScreen({ route, navigation }) {
         <View style={[styles.container, {
             backgroundColor: themes === 'light' ? color.white : color.back_bg
         }]}>
-            {/* ส่วน Search */}
             <View style={styles.boxsort}>
                 <TouchableOpacity
-                    style={{ height: 50, width: 50, justifyContent: 'center' }}
+                    style={{ padding: 10, justifyContent: 'center' }}
                     onPress={goBack}
                 >
                     <Ionicons
@@ -104,15 +103,15 @@ export default function ProjectsearchScreen({ route, navigation }) {
                         color={themes === 'light' ? color.black : color.white}
                     />
                 </TouchableOpacity>
-
-                {/* Input Search */}
                 <View style={[styles.searchInput, {
                     backgroundColor: themes === 'light' ? color.white : color.font_dark,
                     borderColor: color.green,
+                    flex: 1,
                 }]}>
                     <TextInput
                         style={[styles.input, {
-                            color: themes === 'light' ? color.black : color.white
+                            color: themes === 'light' ? color.black : color.white,
+                            flex: 1
                         }]}
                         placeholder={lang.search}
                         placeholderTextColor={themes === 'light' ? color.grey_t : color.white}
@@ -122,53 +121,51 @@ export default function ProjectsearchScreen({ route, navigation }) {
                         autoCapitalize="none"
                     />
                 </View>
-
-                {/* ปุ่ม Search */}
                 <TouchableOpacity
                     style={styles.searchButton}
                     onPress={() => handleSearch()}
                 >
-                    <Text style={{ color: color.white }}>Search</Text>
+                    <Text style={{ color: color.white }}>{'Search'}</Text>
                 </TouchableOpacity>
             </View>
-
-            {/* ส่วนประวัติการค้นหา */}
             {searchHistory.length > 0 && (
-                <View style={styles.boxSeach}>
-                    <View style={styles.itemFooter}>
-                        <View style={{ width: '85%', paddingLeft: 10 }}>
-                            <Text style={[styles.text, {
-                                color: themes === 'light' ? color.black : color.white
-                            }]}>{lang.search_history}</Text>
+                <View style={{ flex: 1 }}>
+                    <View style={styles.boxSeach}>
+                        <View style={styles.itemFooter}>
+                            <View style={{ width: '85%', paddingLeft: 10 }}>
+                                <Text style={[styles.text, {
+                                    color: themes === 'light' ? color.black : color.white
+                                }]}>{lang.search_history}</Text>
+                            </View>
+                            <TouchableOpacity
+                                style={styles.clearButton}
+                                onPress={() => clearHistory()}
+                            >
+                                <Ionicons name="trash" size={20} color={color.grey_pr} />
+                            </TouchableOpacity>
                         </View>
-                        <TouchableOpacity
-                            style={styles.clearButton}
-                            onPress={() => clearHistory()}
-                        >
-                            <Ionicons name="trash" size={20} color={color.grey_pr} />
-                        </TouchableOpacity>
                     </View>
+                    <FlatList
+                        style={styles.boxhistory}
+                        data={searchHistory}
+                        keyExtractor={(item, index) => index.toString()}
+                        renderItem={({ item }) => (
+                            <TouchableOpacity
+                                style={[styles.historyButton, {
+                                    backgroundColor: themes === 'light' ? color.white : color.font_dark,
+                                    borderWidth: 1,
+                                    borderColor: color.border2,
+                                }]}
+                                onPress={() => handleSearch(item)}
+                            >
+                                <Text style={{
+                                    color: themes === 'light' ? color.grey_t : color.white
+                                }}>{item}</Text>
+                            </TouchableOpacity>
+                        )}
+                    />
                 </View>
             )}
-
-            {/* แสดงประวัติการค้นหา */}
-            <View style={styles.boxhistory}>
-                {searchHistory.map((item, index) => (
-                    <TouchableOpacity
-                        key={index}
-                        style={[styles.historyButton, {
-                            backgroundColor: themes === 'light' ? color.white : color.white,
-                            borderWidth: 1,
-                            borderColor: color.border2,
-                        }]}
-                        onPress={() => handleSearch(item)}
-                    >
-                        <Text style={{
-                            color: themes === 'light' ? color.grey_t : color.black
-                        }}>{item}</Text>
-                    </TouchableOpacity>
-                ))}
-            </View>
         </View>
     );
 }
@@ -181,8 +178,8 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         paddingHorizontal: 5,
-        marginTop: 35,
-        marginHorizontal: 5
+        marginTop: 45,
+        marginHorizontal: 5,
     },
     searchInput: {
         flex: 1,

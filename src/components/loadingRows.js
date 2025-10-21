@@ -32,6 +32,7 @@ export default function LoadingRows() {
     return (
         <Modal
             animationType="fade"
+            statusBarTranslucent={true}
         // transparent={true}
         // visible={isLoading}
         >

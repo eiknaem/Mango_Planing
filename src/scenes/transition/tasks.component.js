@@ -157,12 +157,12 @@ export default function TasksScreen({ route, navigation }) {
             setTaskArr([]);
             let nav = config.PPN_PG_RES == "Y" ? "progressTab" : "Progress";
             // let nav = "progressTab";
-            console.log("conFigPPN: ",config.PPN_PG_RES)
+            console.log("conFigPPN: ", config.PPN_PG_RES)
             // console.log("nav: ", nav);
 
             console.log("แ", route.params.pre_event);
             console.log("Pre_event2: ", route.params.pre_event2);
-            
+
             navigation.navigate(nav, {
                 //progressTab
                 site: dataServer,
@@ -1312,7 +1312,7 @@ export default function TasksScreen({ route, navigation }) {
                             <Text style={[styles.h4, { marginLeft: 5, fontSize: 14, color: themes == 'light' ? colors.black : colors.white }]}>{checkUpdateProgress(item)}</Text>
                         </View>
                         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'flex-end', paddingEnd: 20 }}>
-                            <Text style={[styles.h5_bold, { backgroundColor: colors.red, width: 90, height: 25, borderRadius: 5, marginLeft: 5, fontSize: 14, textAlign: 'center', color: themes == 'light' ? colors.black : colors.white }]}>{item.status}</Text>
+                            <Text style={[styles.h5_bold, { backgroundColor: colors.red, width: 90, height: 25, borderRadius: 5, marginLeft: 5, fontSize: 14, textAlign: 'center', color: themes == 'light' ? colors.white : colors.black }]}>{item.status}</Text>
                         </View>
                     </View>
                     <View style={{ flex: 2, flexDirection: 'row' }}>

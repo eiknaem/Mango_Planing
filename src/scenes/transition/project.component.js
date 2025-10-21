@@ -338,27 +338,27 @@ export default function ProjectScreen({ route, navigation }) {
     const onReadNotification = async () => {
         console.log("📩 Start onReadNotification");
         setLoadfile(true);
-      
+
         try {
-          const res = await xt.showAllNoti();
-          console.log("🔔 All Notifications:", res);
-      
-          const cleanData = $linq(res)
-            .where(x => x.read_timestamp == null || x.count_d > 0 || x.count_e > 0 || x.count_s > 0)
-            .toArray();
-      
-          console.log("✅ Filtered Notifications:", cleanData);
-      
-          setCountNoti(cleanData.length);
-          setDataNoti(cleanData);
+            const res = await xt.showAllNoti();
+            console.log("🔔 All Notifications:", res);
+
+            const cleanData = $linq(res)
+                .where(x => x.read_timestamp == null || x.count_d > 0 || x.count_e > 0 || x.count_s > 0)
+                .toArray();
+
+            console.log("✅ Filtered Notifications:", cleanData);
+
+            setCountNoti(cleanData.length);
+            setDataNoti(cleanData);
         } catch (error) {
-          console.error("❌ Error in onReadNotification:", error);
+            console.error("❌ Error in onReadNotification:", error);
         } finally {
-          setLoadfile(false);
-          console.log("📴 setLoadfile(false)");
+            setLoadfile(false);
+            console.log("📴 setLoadfile(false)");
         }
-      };
-      
+    };
+
 
     const onLoadAuth = async () => {
         let server_data = (await apiAuth.getAuth()).data;
@@ -508,6 +508,7 @@ export default function ProjectScreen({ route, navigation }) {
                 animationType="fade"
                 transparent={true}
                 visible={isShowMenu}
+                statusBarTranslucent={true}
                 onRequestClose={() => setShowMenu(false)}
             >
                 <TouchableWithoutFeedback onPress={() => setShowMenu(false)}>
@@ -516,7 +517,7 @@ export default function ProjectScreen({ route, navigation }) {
                             style={{
                                 width: width * 0.4,
                                 height: height * 0.2,
-                                top: Platform.OS == 'ios' ? height * 0.10 : height * 0.05,
+                                top: Platform.OS == 'ios' ? height * 0.1 : height * 0.1,
                                 left: width * 0.06,
                                 borderWidth: 1,
                                 borderColor: colors.image_light,
@@ -555,9 +556,17 @@ export default function ProjectScreen({ route, navigation }) {
         return (
             <>
                 <View style={[styles.blockcard, { backgroundColor: themeObject.colors.font_dark }]}>
-                    {/* Header */}
-                    <View style={{ width: '100%', height: 250, }}>
-                        <TouchableOpacity style={[styles.blockcard, { flex: 2, alignItems: 'center', justifyContent: 'center', backgroundColor: themeObject.colors.back_dark }]}
+                    <View style={{ width: '100%', height: 200 }}>
+                        <TouchableOpacity
+                            style={[
+                                {
+                                    flex: 1,
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    borderRadius: 6,
+                                    backgroundColor: themeObject.colors.back_dark
+                                }
+                            ]}
                             onPress={() => beforeNextImage(item)}>
                             {!$xt.isEmpty(item.project_img) ?
                                 (
@@ -566,68 +575,60 @@ export default function ProjectScreen({ route, navigation }) {
                                             width: "100%",
                                             height: "100%",
                                             borderRadius: 6,
-
                                         }}
                                         resizeMode="cover"
-                                        // source={ongetimgProject(false, item.project_img)}
                                         source={{ uri: item.project_img }}
                                     />
                                 )
                                 :
                                 (
                                     <Text style={[styles.h3, { color: '#8d99b2', }]}>no image avaliable</Text>
-
                                 )}
-
                         </TouchableOpacity>
-                        <View style={[styles.blockcard, { flex: 1, backgroundColor: themeObject.colors.font_dark }]}>
-                            <View style={{ flex: 1, flexDirection: 'row', backgroundColor: themeObject.colors.font_dark }}>
-                                <View style={{ flex: 3 }} >
-                                    <Text style={[styles.h5_14, { fontSize: 12, color: themeObject.colors.text }]} numberOfLines={1} > {item.pre_des}</Text>
-                                </View>
-                                <View style={{ flex: 1, backgroundColor: themeObject.colors.font_dark }}>
-                                    <View style={{ alignItems: 'flex-end', paddingEnd: 15 }}>
-                                        <Feather name="paperclip" size={20} color="#8d99b2" />
-                                    </View>
+                    </View>
+                    <View style={[styles.blockcard, { backgroundColor: themeObject.colors.font_dark }]}>
+                        <View style={{ flex: 1, flexDirection: 'row', backgroundColor: themeObject.colors.font_dark }}>
+                            <View style={{ flex: 3 }} >
+                                <Text style={[styles.h5_14, { fontSize: 12, color: themeObject.colors.text }]} numberOfLines={1} > {item.pre_des}</Text>
+                            </View>
+                            <View style={{ flex: 1, backgroundColor: themeObject.colors.font_dark }}>
+                                <View style={{ alignItems: 'flex-end', paddingEnd: 15 }}>
+                                    <Feather name="paperclip" size={20} color="#8d99b2" />
                                 </View>
                             </View>
-
-                            {/* Body */}
-                            <View style={{ flex: 2, flexDirection: 'row', backgroundColor: themeObject.colors.font_dark }}>
-                                <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center' }}>
-                                    <View style={{ width: 30, height: 30, borderWidth: 1, borderColor: colors.greentree, borderRadius: 30, }}>
-                                        <Image
-                                            style={{
-                                                width: "100%",
-                                                height: "100%",
-                                                borderRadius: 90,
-                                            }}
-                                            resizeMode="cover"
-                                            // source={{ uri: ongetimg(false, item.pathpic)}}
-                                            source={
-                                                !$xt.isEmpty(item.pathpic)
-                                                    ? { uri: item.pathpic } // ลิงก์ภาพ
-                                                    : require("../../../assets/images/user.png") // fallback ภาพ default
-                                            }
-                                        ></Image>
-                                    </View>
-                                    <Text style={[styles.h5, { marginLeft: 5, fontSize: 12, color: themeObject.colors.text }]}>PM : {item.empfullname_t || lang.overlayNoRows}</Text>
+                        </View>
+                        <View style={{ flex: 2, flexDirection: 'row', backgroundColor: themeObject.colors.font_dark }}>
+                            <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center' }}>
+                                <View style={{ width: 30, height: 30, borderWidth: 1, borderColor: colors.greentree, borderRadius: 30, }}>
+                                    <Image
+                                        style={{
+                                            width: "100%",
+                                            height: "100%",
+                                            borderRadius: 90,
+                                        }}
+                                        resizeMode="cover"
+                                        source={
+                                            !$xt.isEmpty(item.pathpic)
+                                                ? { uri: item.pathpic }
+                                                : require("../../../assets/images/user.png")
+                                        }
+                                    ></Image>
                                 </View>
-                                <View style={{ flex: 1, flexDirection: 'row' }}>
-
-                                    <View style={{ flex: 1, alignItems: 'flex-end', justifyContent: 'center' }}>
-                                        <Text style={[styles.h5, { marginLeft: 5, fontSize: 12, color: themeObject.colors.text }]}>{lang.start_date}</Text>
-                                        <Text style={[styles.h5, { marginLeft: 5, fontSize: 12, color: themeObject.colors.text }]}>{item.startdate}</Text>
-                                    </View>
-                                    <View style={{ flex: 1, alignItems: 'flex-end', justifyContent: 'center' }}>
-                                        <Text style={[styles.h5, { marginLeft: 5, fontSize: 12, color: themeObject.colors.text }]}>{lang.emd_date}</Text>
-                                        <Text style={[styles.h5, { marginLeft: 5, fontSize: 12, color: themeObject.colors.text }]}>{item.enddate}</Text>
-                                    </View>
-
+                                <Text style={[styles.h5, { marginLeft: 5, fontSize: 12, color: themeObject.colors.text }]}>PM : {item.empfullname_t || lang.overlayNoRows}</Text>
+                            </View>
+                            <View style={{ flex: 1, flexDirection: 'row' }}>
+                                <View style={{ flex: 1, alignItems: 'flex-end', justifyContent: 'center' }}>
+                                    <Text style={[styles.h5, { marginLeft: 5, fontSize: 12, color: themeObject.colors.text }]}>{lang.start_date}</Text>
+                                    <Text style={[styles.h5, { marginLeft: 5, fontSize: 12, color: themeObject.colors.text }]}>{item.startdate}</Text>
+                                </View>
+                                <View style={{ flex: 1, alignItems: 'flex-end', justifyContent: 'center' }}>
+                                    <Text style={[styles.h5, { marginLeft: 5, fontSize: 12, color: themeObject.colors.text }]}>{lang.emd_date}</Text>
+                                    <Text style={[styles.h5, { marginLeft: 5, fontSize: 12, color: themeObject.colors.text }]}>{item.enddate}</Text>
                                 </View>
                             </View>
                         </View>
                     </View>
+
                 </View >
             </>
         );
