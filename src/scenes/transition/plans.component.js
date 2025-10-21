@@ -278,7 +278,7 @@ export default function PlansScreen({ route, navigation }) {
                         </View>
                     </View>
                     <View style={{ flex: 2, flexDirection: 'row' }}>
-                        <View style={{ flex: 1 }}>
+                        <View style={{ flex: 4 }}>
                             <Text style={[styles.h5,
                             { marginLeft: 5, fontSize: 12, color: themes == 'light' ? colors.black : colors.white }]}>PL :  <Text style={[styles.h5_bold, { color: colors.greentree, fontSize: 14, }]}>
                                     {Number.isInteger(item.plan_per)
@@ -287,7 +287,7 @@ export default function PlansScreen({ route, navigation }) {
                                 </Text>
                             </Text>
                         </View>
-                        <View style={{ flex: 1 }}>
+                        <View style={{ flex: 4 }}>
                             <Text style={[styles.h5,
                             { marginLeft: 5, fontSize: 12, color: themes == 'light' ? colors.black : colors.white }]}>PG : <Text style={[styles.h5_bold, { color: colors.red, fontSize: 14, }]}>
                                     {Number.isInteger(item.progress_per)
@@ -346,19 +346,18 @@ export default function PlansScreen({ route, navigation }) {
                                 )}
                             </View> */}
                         </View>
-                        {/* เพิ่มส่วน Start Date, End Date */}
                         <View style={{ flex: 1, flexDirection: 'row' }}>
-                            <View style={{ flex: 1, alignItems: 'flex-end', justifyContent: 'center' }}>
-                                <Text style={[styles.h5, { marginLeft: 5, fontSize: 12, }]}>{lang.start_date}</Text>
-                                <Text style={[styles.h5, { marginLeft: 5, fontSize: 12, }]}>{item.start_date_show}</Text>
+                            <View style={{ flex: 4, alignItems: 'center' }}>
+                                <Text style={[styles.h5, { marginLeft: 5, fontSize: 12, color: themes == 'light' ? colors.black : colors.white }]}>{lang.start_date}</Text>
+                                <Text style={[styles.h5, { marginLeft: 5, fontSize: 12, color: themes == 'light' ? colors.black : colors.white }]}>{item.start_date_show}</Text>
                             </View>
-                            <View style={{ flex: 1, alignItems: 'flex-end', justifyContent: 'center' }}>
-                                <Text style={[styles.h5, { marginLeft: 5, fontSize: 12, }]}>{lang.emd_date}</Text>
-                                <Text style={[styles.h5, { marginLeft: 5, fontSize: 12, }]}>{item.end_date_show}</Text>
+                            <View style={{ flex: 4, alignItems: 'center' }}>
+                                <Text style={[styles.h5, { marginLeft: 5, fontSize: 12, color: themes == 'light' ? colors.black : colors.white }]}>{lang.emd_date}</Text>
+                                <Text style={[styles.h5, { marginLeft: 5, fontSize: 12, color: themes == 'light' ? colors.black : colors.white }]}>{item.end_date_show}</Text>
                             </View>
                         </View>
                         <TouchableOpacity style={{ alignItems: 'flex-end', justifyContent: 'center' }}>
-                            <View style={{ alignItems: 'flex-end', padding: 15 }}>
+                            <View style={{ alignItems: 'flex-end', justifyContent: 'center' }}>
                                 <Feather name="paperclip" size={20} color="#8d99b2" />
                             </View>
                         </TouchableOpacity>

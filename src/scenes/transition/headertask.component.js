@@ -8,7 +8,6 @@ import {
   Text,
   TopNavigation,
   TopNavigationAction,
-  useTheme,
   Card,
   Spinner, Button, Layout, Avatar
 } from '@ui-kitten/components';
@@ -17,6 +16,7 @@ import { ArrowIosBackIcon, ArrowIosForwardIcon, AttachIcon, ArrowIosBackDarkthem
 import { SafeAreaLayout } from '../../components/safe-area-layout.component.js';
 import { xt, getDataStorage, setDataStorage } from '../../components/service.js'
 import { NoRows, LoadingRows } from '../../components/main-layout';
+import { useTheme } from '../../components/themeProvider.js';
 
 export const HeadertaskScreen = ({ route, navigation }) => {
 

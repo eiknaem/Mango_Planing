@@ -43,7 +43,7 @@ export default function ProgresshistoryScreen({ route, navigation }) {
             headerLeft: () => (
                 <View style={{ flexDirection: 'row', width: width * 0.2, height: height * 0.04, justifyContent: "center", alignItems: "center" }}>
                     <TouchableOpacity style={{ marginRight: '20%', justifyContent: "center", alignItems: "center", }}
-                        onPress={() => goBack()}
+                        onPress={() => navigation.goBack()}
                     >
                         <Ionicons name="chevron-back" size={24} color={themeObject.colors.text} />
                     </TouchableOpacity>
