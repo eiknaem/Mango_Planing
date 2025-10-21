@@ -24,7 +24,7 @@ import { LoadingRows, NoRows } from "../../components/main-layout";
 import moment from 'moment';
 import { CheckViewPPN } from "../../components/variousRights";
 import $xt from "../../api/xtools";
-
+import { useTheme } from "../../components/themeProvider";
 
 export default function PlansScreen({ route, navigation }) {
     const $linq = arr => new linq(arr);
@@ -52,11 +52,12 @@ export default function PlansScreen({ route, navigation }) {
     const getNoti = Params?.noti;
     const isFrom = Params?.from;
     const getManager = Params?.manager;
+    const { themeObject } = useTheme();
 
     useLayoutEffect(() => {
         navigation.setOptions({
             headerStyle: {
-                backgroundColor: themes === 'light' ? colors.white : colors.back_bg,
+                backgroundColor: themeObject.colors.background,
                 shadowColor: "transparent",
                 elevation: 0,
             },
@@ -64,11 +65,11 @@ export default function PlansScreen({ route, navigation }) {
             headerTitleStyle: {
                 fontWeight: "bold",
             },
-            headerTintColor: themes === 'light' ? colors.black : colors.white, // แก้ไขตรงนี้
+            headerTintColor: themeObject.colors.text,
             headerLeft: () => headerLeft(),
             headerRight: () => headerRight()
         });
-    }, [route, isCountNoti, loadfile, themes, colors]);
+    }, [route, isCountNoti, loadfile, themes, colors, themeObject]);
     useFocusEffect(
         React.useCallback(() => {
             getLangDF();
@@ -261,10 +262,10 @@ export default function PlansScreen({ route, navigation }) {
     };
 
     const renderItem = ({ item, index }) => {
-        // console.log("item", item);
+        console.log("renderItem item", item);
         return (
             <>
-                <TouchableOpacity style={[styles.blockcard, { flex: 1, top: '5%', width: '100%', backgroundColor: themes == 'light' ? colors.white : colors.font_dark }]}
+                <TouchableOpacity style={[styles.blockcard, { backgroundColor: themeObject.colors.font_dark }]}
                     onPress={() => onItemPress(item)}
                 >
                     {/* Body */}
@@ -297,15 +298,14 @@ export default function PlansScreen({ route, navigation }) {
                         </View>
                     </View>
                     <View style={{ flex: 4, marginTop: 10, flex: 6, flexDirection: 'row', backgroundColor: themes == 'light' ? colors.white : colors.font_dark }}>
-                        <View
-                            style={{ flex: 4, flexDirection: 'row', alignItems: 'center' }}>
+                        <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center' }}>
                             {item.ow_list.map((owner, index) => (
                                 <TouchableOpacity
                                     onPress={() => onAssignList(item)}
                                     key={index}
                                     style={{
-                                        width: 30,
-                                        height: 30,
+                                        width: 40,
+                                        height: 40,
                                         borderWidth: 1,
                                         borderColor: colors.greentree,
                                         borderRadius: 30,
@@ -326,28 +326,43 @@ export default function PlansScreen({ route, navigation }) {
                                         }
                                     />
                                 </TouchableOpacity>
+
                             ))}
-                            {item.ow_list.length > 3 && (
-                                <View style={{
-                                    marginLeft: 5,
-                                    backgroundColor: colors.grey_t,
-                                    borderRadius: 15,
-                                    padding: 5
-                                }}>
-                                    <Text style={{
-                                        color: colors.white,
-                                        fontSize: 12
+                            {/* <View style={{ backgroundColor: "red", flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+                                {item.ow_list.length > 3 && (
+                                    <View style={{
+                                        marginLeft: 5,
+                                        backgroundColor: colors.grey_t,
+                                        borderRadius: 15,
+                                        padding: 5
                                     }}>
-                                        +{item.ow_list.length - 3}
-                                    </Text>
-                                </View>
-                            )}
+                                        <Text style={{
+                                            color: colors.white,
+                                            fontSize: 12
+                                        }}>
+                                            +{item.ow_list.length - 3}
+                                        </Text>
+                                    </View>
+                                )}
+                            </View> */}
                         </View>
-
-
                         {/* เพิ่มส่วน Start Date, End Date */}
+                        <View style={{ flex: 1, flexDirection: 'row' }}>
+                            <View style={{ flex: 1, alignItems: 'flex-end', justifyContent: 'center' }}>
+                                <Text style={[styles.h5, { marginLeft: 5, fontSize: 12, }]}>{lang.start_date}</Text>
+                                <Text style={[styles.h5, { marginLeft: 5, fontSize: 12, }]}>{item.start_date_show}</Text>
+                            </View>
+                            <View style={{ flex: 1, alignItems: 'flex-end', justifyContent: 'center' }}>
+                                <Text style={[styles.h5, { marginLeft: 5, fontSize: 12, }]}>{lang.emd_date}</Text>
+                                <Text style={[styles.h5, { marginLeft: 5, fontSize: 12, }]}>{item.end_date_show}</Text>
+                            </View>
+                        </View>
+                        <TouchableOpacity style={{ alignItems: 'flex-end', justifyContent: 'center' }}>
+                            <View style={{ alignItems: 'flex-end', padding: 15 }}>
+                                <Feather name="paperclip" size={20} color="#8d99b2" />
+                            </View>
+                        </TouchableOpacity>
                     </View>
-
                 </TouchableOpacity >
             </>
         );

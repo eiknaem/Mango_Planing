@@ -563,8 +563,7 @@ export default function ProjectScreen({ route, navigation }) {
 
     const renderItem = ({ item, index }) => {
         return (
-            <TouchableOpacity
-                style={[styles.blockcard, { backgroundColor: themeObject.colors.font_dark }]}
+            <TouchableOpacity style={[styles.blockcard, { backgroundColor: themeObject.colors.font_dark }]}
                 onPress={() => beforeNextImage(item)}
             >
                 <View style={{ width: '100%', height: 200 }}>

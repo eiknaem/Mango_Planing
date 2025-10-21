@@ -24,6 +24,7 @@ import moment from 'moment';
 import { CheckViewPPN } from "../../components/variousRights";
 import { apiAuth } from "../../api/authentication";
 import { UpdateProgress_UR } from "../../components/variousRights";
+import { useTheme } from "../../components/themeProvider";
 
 export default function TasksScreen({ route, navigation }) {
     const Params = route.params;
@@ -57,13 +58,10 @@ export default function TasksScreen({ route, navigation }) {
     const [isAuth, setAuth] = useState("");
     const [loadfile, setLoadfile] = useState(false);
 
-
-
-
     const [searchTime, setSeachTime] = useState(null);
     const { width, height } = Dimensions.get('window');
-    // console.log("dataAge: ", dataAge);
-    // console.log("dataAge2: ", getDataAgeSearch);
+    const { themeObject } = useTheme();
+
 
 
 
@@ -1226,7 +1224,7 @@ export default function TasksScreen({ route, navigation }) {
         // console.log("item", item);
         return (
             <>
-                <TouchableOpacity style={[styles.blockcard, { flex: 1, top: '5%', width: '100%', backgroundColor: themes == 'light' ? colors.white : colors.font_dark }]}
+                <TouchableOpacity style={[styles.blockcard, { backgroundColor: themeObject.colors.font_dark }]}
                     onPress={() => onItemPress(item, index)}
                     disabled={checkConfirmUpdate(item)}>
                     {/* Body */}
@@ -1259,62 +1257,71 @@ export default function TasksScreen({ route, navigation }) {
                                 </Text>
                             </Text>
                         </View>
-                        <TouchableOpacity style={{ flex: 1, alignItems: 'center', }}>
+                        <TouchableOpacity style={{ flex: 1, alignItems: 'flex-end' }}>
                             <FontAwesome name="commenting-o" size={24} color="#8d99b2" />
                         </TouchableOpacity>
                     </View>
                     <View style={{ flex: 4, marginTop: 10, flex: 6, flexDirection: 'row', backgroundColor: themes == 'light' ? colors.white : colors.font_dark }}>
-                        <TouchableOpacity
-                            style={{ flex: 4, flexDirection: 'row', alignItems: 'center' }}
-                            onPress={() => onAssignList(item)}
-                        >
-                            <View style={{ flexDirection: 'row' }}>
-                                <FlatList
-                                    style={{ backgroundColor: 'transparent' }}
-                                    horizontal={true}
-                                    data={item.ow_list}
-                                    renderItem={renderFriendItem}
-                                    showsVerticalScrollIndicator={false}
-                                    showsHorizontalScrollIndicator={false}
-                                />
-                                {item.ow_list && item.ow_list.length > 3 &&
-                                    <View style={{
-                                        borderColor: colors.greentree,
-                                        borderWidth: 1,
-                                        borderRadius: 50,
-                                        width: 40,
-                                        height: 40,
-                                        alignItems: 'center',
-                                        justifyContent: 'center'
-                                    }}>
-                                        <Text style={{ color: themes == 'light' ? colors.black : colors.white }}>
-                                            +{item.ow_list.length - 3}
-                                        </Text>
-                                    </View>
-                                }
+                        <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center' }}>
+                            <TouchableOpacity
+                                onPress={() => onAssignList(item)}
+                                style={{
+                                    width: 40,
+                                    height: 40,
+                                    borderWidth: 1,
+                                    borderColor: colors.greentree,
+                                    borderRadius: 30,
+                                    marginLeft: index > 0 ? -10 : 0 // ให้รูปซ้อนกันเล็กน้อย
+                                }}
+                            >
+                                <View style={{ flexDirection: 'row' }}>
+                                    <FlatList
+                                        style={{ backgroundColor: 'transparent' }}
+                                        horizontal={true}
+                                        data={item.ow_list}
+                                        renderItem={renderFriendItem}
+                                        showsVerticalScrollIndicator={false}
+                                        showsHorizontalScrollIndicator={false}
+                                    />
+                                    {item.ow_list && item.ow_list.length > 3 &&
+                                        <View style={{
+                                            borderColor: colors.greentree,
+                                            borderWidth: 1,
+                                            borderRadius: 50,
+                                            width: 40,
+                                            height: 40,
+                                            alignItems: 'center',
+                                            justifyContent: 'center'
+                                        }}>
+                                            <Text style={{ color: themes == 'light' ? colors.black : colors.white }}>
+                                                +{item.ow_list.length - 3}
+                                            </Text>
+                                        </View>
+                                    }
+                                </View>
+                            </TouchableOpacity>
+                        </View>
+                        <View style={{ flex: 1, flexDirection: 'row' }}>
+                            <View style={{ flex: 4, alignItems: 'center' }}>
+                                <Text style={[styles.h5, { marginLeft: 5, fontSize: 12, color: themes == 'light' ? colors.black : colors.white }]}>{lang.start_date}</Text>
+                                <Text style={[styles.h5, { marginLeft: 5, fontSize: 12, color: themes == 'light' ? colors.black : colors.white }]}>{item.start_date_show}</Text>
                             </View>
-                        </TouchableOpacity>
-                        <View style={{ flex: 6, flexDirection: 'row', }}>
-                            <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'center' }}>
-                                <View style={{ flex: 4, alignItems: 'center' }}>
-                                    <Text style={[styles.h5, { marginLeft: 5, fontSize: 12, color: themes == 'light' ? colors.black : colors.white }]}>{lang.start_date}</Text>
-                                    <Text style={[styles.h5, { marginLeft: 5, fontSize: 12, color: themes == 'light' ? colors.black : colors.white }]}>{item.start_date_show}</Text>
-                                </View>
-                                <View style={{ flex: 4, alignItems: 'center' }}>
-                                    <Text style={[styles.h5, { marginLeft: 5, fontSize: 12, color: themes == 'light' ? colors.black : colors.white }]}>{lang.emd_date}</Text>
-                                    <Text style={[styles.h5, { marginLeft: 5, fontSize: 12, color: themes == 'light' ? colors.black : colors.white }]}>{item.end_date_show}</Text>
-                                </View>
-                                <TouchableOpacity style={{ flex: 2, alignItems: 'center' }}>
-                                    <Feather name="paperclip" size={20} color="#8d99b2" />
-                                    <View style={{ width: width * 0.05, height: height * 0.025, position: "absolute", backgroundColor: colors.black, right: width * -0.001, top: "30%", borderRadius: 20, alignItems: "center", justifyContent: "center" }}>
-                                        {loadfile
-                                            ? <ActivityIndicator size={12} color={"#fff"} />
-                                            : (<Text style={[styles.h5_bold, { color: colors.white, fontSize: 10, marginLeft: 3 }]}>{"99+"} </Text>)}
-                                        {/* <ActivityIndicator size={12} color={"#fff"} /> */}
-                                    </View>
-                                </TouchableOpacity>
+                            <View style={{ flex: 4, alignItems: 'center' }}>
+                                <Text style={[styles.h5, { marginLeft: 5, fontSize: 12, color: themes == 'light' ? colors.black : colors.white }]}>{lang.emd_date}</Text>
+                                <Text style={[styles.h5, { marginLeft: 5, fontSize: 12, color: themes == 'light' ? colors.black : colors.white }]}>{item.end_date_show}</Text>
                             </View>
                         </View>
+                        <TouchableOpacity style={{ alignItems: 'flex-end', justifyContent: 'center' }}>
+                            <View style={{}}>
+                                <Feather name="paperclip" size={20} color="#8d99b2" />
+                            </View>
+                            <View style={{ width: width * 0.05, height: height * 0.025, position: "absolute", backgroundColor: colors.black, right: width * -0.02, top: "50%", borderRadius: 20, alignItems: "center", justifyContent: "center" }}>
+                                {loadfile
+                                    ? <ActivityIndicator size={12} color={"#fff"} />
+                                    : (<Text style={[styles.h5_bold, { color: colors.white, fontSize: 10, marginLeft: 3 }]}>{"99+"} </Text>)}
+                                {/* <ActivityIndicator size={12} color={"#fff"} /> */}
+                            </View>
+                        </TouchableOpacity>
                     </View>
                 </TouchableOpacity >
             </>
