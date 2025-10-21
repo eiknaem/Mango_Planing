@@ -18,8 +18,7 @@ import { Ionicons, FontAwesome, Feather, AntDesign, MaterialIcons } from "@expo/
 import linq from "js-linq";
 import { styles as appStyles, colors } from "../../stylesheet/styles";
 import { xt, getDataStorage, setDataStorage } from "../../api/service";
-import LoadingRows from "../../components/loadingRows";
-import NoRows from "../../components/noRows";
+import { LoadingRows, NoRows } from "../../components/main-layout";
 import moment from 'moment';
 import ImageViewer from 'react-native-image-zoom-viewer';
 import { useTheme } from "../../components/themeProvider";
@@ -143,7 +142,7 @@ export default function ProgresshistoryScreen({ route, navigation }) {
             borderRadius: 8,
             marginBottom: 10,
             padding: 12,
-            shadowColor:themeObject.colors.border,
+            shadowColor: themeObject.colors.border,
             shadowOffset: { width: 0, height: 1 },
             shadowOpacity: 0.1,
             shadowRadius: 2,

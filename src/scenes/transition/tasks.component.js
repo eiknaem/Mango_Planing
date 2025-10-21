@@ -19,8 +19,7 @@ import { Ionicons, FontAwesome, Feather, AntDesign, EvilIcons } from "@expo/vect
 import linq from "js-linq";
 import { styles, colors } from "../../stylesheet/styles";
 import { xt, getDataStorage, setDataStorage } from "../../api/service";
-import LoadingRows from "../../components/loadingRows";
-import NoRows from "../../components/noRows";
+import { LoadingRows, NoRows } from "../../components/main-layout";
 import moment from 'moment';
 import { CheckViewPPN } from "../../components/variousRights";
 import { apiAuth } from "../../api/authentication";
@@ -213,23 +212,6 @@ export default function TasksScreen({ route, navigation }) {
             owner_id: item.owner_id,
             owner_id_outsource: item.owner_id_outsource,
         });
-        // } 
-        // else {
-        //   navigation.navigate("Attachfile", {
-        //     site: dataServer,
-        //     pre_event2: item.pre_event2,
-        //     pre_event: item.pre_event,
-        //     plan_code: item.plan_code,
-        //     taskid: item.taskid,
-        //     dataTask: taskArr,
-        //     dataAge: dataAge,
-        //     from: "task",
-        //     manager: getManagerPlan,
-        //     skill: "Normal",
-        //     owner_id: item.owner_id,
-        //     owner_id_outsource: item.owner_id_outsource,
-        //   });
-        // }
     };
     const onMessagePress = (item) => {
         navigation.navigate("Messaging", {
@@ -347,17 +329,6 @@ export default function TasksScreen({ route, navigation }) {
 
         setSeachTime(!xt.isEmpty(timeValue_) ? JSON.parse(timeValue_) : "");
         setSeachValue(searchValue_);
-
-        // let url =
-        //   "Planning/Plan/app_plan_task_list?pre_event=" +
-        //   route.params.pre_event +
-        //   "&plan_code=" +
-        //   route.params.plan_code;
-        // let res = await xt.getServer(url);
-        // console.log("res v1: ",res);
-
-
-        //v2 เรียกตัวแม่
 
         let data_ = []
 
@@ -524,54 +495,6 @@ export default function TasksScreen({ route, navigation }) {
         setAuth(auth);
 
     };
-
-    // const onFilter = async (data_, searchValue, statusValue, timeValue_) => {
-    //     console.log("data_ onFilter: ", data_);
-    //     console.log("statusValue ", statusValue);
-    //     if (timeValue_ != "") {
-    //         console.log("กรอง วัน");
-    //         const Time = JSON.parse(timeValue_);
-    //         console.log("searchTime ==================>", Time);
-    //         data_date = $linq(data_).where(w =>
-    //             (moment(w?.start_date2).format("YYYYMMDD") >= moment(Time.start_time).format("YYYYMMDD") &&
-    //                 moment(w?.start_date2).format("YYYYMMDD") <= moment(Time.end_time).format("YYYYMMDD")) ||
-    //             (moment(Time.start_time).format("YYYYMMDD") >= moment(w?.start_date2).format("YYYYMMDD") &&
-    //                 moment(Time.start_time).format("YYYYMMDD") <= moment(w?.end_date2).format("YYYYMMDD"))).toArray();
-    //     }
-    //     // console.log("data_ search date: ", data_date);
-
-    //     // console.log("data_ search date: ", data_);
-
-    //     const status_split = xt.isEmpty(statusValue) ? [] : statusValue.split(",");
-    //     setStatusValue(status_split);
-    //     if (searchValue || status_split.length != 0) {
-    //         const filterdata = data_
-    //             .filter((item) => status_split.includes(item.status))
-    //             .filter(function filter(c) {
-    //                 return (
-    //                     searchValue === "" ||
-    //                     c.taskname.toLowerCase().startsWith(searchValue.toLowerCase())
-    //                 );
-    //             });
-    //         if (filterdata.length != 0) {
-    //             setDataemty(false);
-    //             setDataArr(filterdata)
-    //         } else if(filterdata.length === 0) {
-    //             setDataArr(data_);
-    //             setDataemty(false);
-    //         }
-    //         // console.log("filterdata: ",filterdata);
-    //     } else {
-    //         console.log("dasdasd", data_);
-    //         setDataArr(data_);
-    //         if (data_.length != 0) {
-    //             setDataemty(false);
-    //         } else {
-    //             setDataemty(true);
-    //         }
-    //     }
-    //     setDataloadding(false);
-    // };
 
     const onFilter = async (data_, searchValue, statusValue, timeValue_) => {
         console.log("data_ onFilter: ", data_);

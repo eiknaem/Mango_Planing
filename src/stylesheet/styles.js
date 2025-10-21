@@ -739,13 +739,9 @@ export const styles = StyleSheet.create({
     marginVertical: 7.5,
     justifyContent: 'center',
     padding: 10,
-    // width: '90%',
-    // borderWidth: 1,
     borderRadius: 6,
-    // borderColor: "#D0D0D0",
     marginHorizontal: 3,
     backgroundColor: colors.white,
-    // opacity: 0.96,
     shadowColor: "rgb(00, 00, 00)",
     shadowOffset: {
       width: 0,
@@ -753,7 +749,6 @@ export const styles = StyleSheet.create({
     },
     shadowOpacity: 0.25,
     shadowRadius: 2,
-
     elevation: 2,
   },
   blockcard2: {
@@ -1403,5 +1398,5 @@ export const styles = StyleSheet.create({
   },
   flatListContent: {
     padding: 10,
-},
+  },
 });

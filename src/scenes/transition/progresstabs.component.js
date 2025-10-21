@@ -22,8 +22,7 @@ import { Ionicons, FontAwesome, Feather, AntDesign } from "@expo/vector-icons";
 import linq from "js-linq";
 import { styles, colors } from "../../stylesheet/styles";
 import { xt, getDataStorage, setDataStorage } from "../../api/service";
-import LoadingRows from "../../components/loadingRows";
-import NoRows from "../../components/noRows";
+import { LoadingRows, NoRows } from "../../components/main-layout";
 import moment from 'moment';
 import { CheckViewPPN } from "../../components/variousRights";
 import { apiAuth } from "../../api/authentication";
@@ -37,13 +36,13 @@ export default function ProgresstabScreen({ route, navigation }) {
 
     const Params = route.params;
     console.log("Params1:", Params);
-    
+
     const [lang, setLang] = useState({});
     const [themes, setthemes] = useState("");
     const { width, height } = Dimensions.get('window');
     const { themeObject } = useTheme();
 
-     useLayoutEffect(() => {
+    useLayoutEffect(() => {
         navigation.setOptions({
             title: "Update Progress",
             headerStyle: {

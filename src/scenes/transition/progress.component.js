@@ -22,8 +22,7 @@ import { Ionicons, FontAwesome, Feather, AntDesign } from "@expo/vector-icons";
 import linq from "js-linq";
 import { styles, colors } from "../../stylesheet/styles";
 import { xt, getDataStorage, setDataStorage } from "../../api/service";
-import LoadingRows from "../../components/loadingRows";
-import NoRows from "../../components/noRows";
+import { LoadingRows, NoRows } from "../../components/main-layout";
 import moment from 'moment';
 import { CheckViewPPN } from "../../components/variousRights";
 import { apiAuth } from "../../api/authentication";
@@ -1010,7 +1009,7 @@ export default function ProgressScreen({ route, navigation }) {
 
         {/* ปัญหาที่พบ */}
         <View style={[localStyles.sectionContainer, { backgroundColor: themes === 'light' ? colors.white : colors.back_bg }]}>
-          <Text style={[localStyles.sectionLabel,{ color: themes == 'light' ? colors.black : colors.white }]}>
+          <Text style={[localStyles.sectionLabel, { color: themes == 'light' ? colors.black : colors.white }]}>
             {lang.incidence || 'ปัญหาที่พบ'}
           </Text>
           <View style={[localStyles.incidenceContainer, { backgroundColor: themes === 'light' ? colors.white : colors.back_bg }]}>
@@ -1039,7 +1038,7 @@ export default function ProgressScreen({ route, navigation }) {
 
         {/* หมายเหตุ */}
         <View style={[localStyles.sectionContainer, { backgroundColor: themes === 'light' ? colors.white : colors.back_bg }]}>
-          <Text style={[localStyles.sectionLabel,{ color: themes == 'light' ? colors.black : colors.white }]}>
+          <Text style={[localStyles.sectionLabel, { color: themes == 'light' ? colors.black : colors.white }]}>
             {lang.remark || 'หมายเหตุ'}
           </Text>
           <TextInput
@@ -1056,7 +1055,7 @@ export default function ProgressScreen({ route, navigation }) {
         {route.params?.config?.PPN_UN_PGI_ALLOW !== "N" && (
           <View style={[localStyles.attachmentSection, { backgroundColor: themes === 'light' ? colors.white : colors.back_bg }]}>
             <View style={localStyles.attachmentHeader}>
-              <Text style={[localStyles.attachmentTitle,{ color: themes == 'light' ? colors.black : colors.white }]}>{lang.text_img || 'รูปภาพ/วิดีโอ'}</Text>
+              <Text style={[localStyles.attachmentTitle, { color: themes == 'light' ? colors.black : colors.white }]}>{lang.text_img || 'รูปภาพ/วิดีโอ'}</Text>
               <ScrollView horizontal style={localStyles.attachmentButtons}>
                 {route.params?.config?.PPN_UPLOAD_SELECT_ALLOW !== "N" && (
                   <TouchableOpacity
@@ -1064,7 +1063,7 @@ export default function ProgressScreen({ route, navigation }) {
                     onPress={pickImage}
                   >
                     <Ionicons name="image-outline" size={20} color={colors.grey_t} />
-                    <Text style={[localStyles.attachButtonText,{ color: themes == 'light' ? colors.black : colors.white }]}>
+                    <Text style={[localStyles.attachButtonText, { color: themes == 'light' ? colors.black : colors.white }]}>
                       {lang.select_img || 'เลือกรูป'}
                     </Text>
                   </TouchableOpacity>
@@ -1076,7 +1075,7 @@ export default function ProgressScreen({ route, navigation }) {
                     onPress={onCamara}
                   >
                     <Ionicons name="camera-outline" size={20} color={colors.grey_t} />
-                    <Text style={[localStyles.attachButtonText,{ color: themes == 'light' ? colors.black : colors.white }]}>
+                    <Text style={[localStyles.attachButtonText, { color: themes == 'light' ? colors.black : colors.white }]}>
                       {lang.camara_img || 'ถ่ายรูป'}
                     </Text>
                   </TouchableOpacity>
@@ -1089,7 +1088,7 @@ export default function ProgressScreen({ route, navigation }) {
                     disabled={isBase64 === "Y"}
                   >
                     <Ionicons name="videocam-outline" size={20} color={colors.grey_t} />
-                    <Text style={[localStyles.attachButtonText,{ color: themes == 'light' ? colors.black : colors.white }]}>
+                    <Text style={[localStyles.attachButtonText, { color: themes == 'light' ? colors.black : colors.white }]}>
                       {lang.take_video || 'วิดีโอ'}
                     </Text>
                   </TouchableOpacity>

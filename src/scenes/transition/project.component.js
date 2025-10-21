@@ -22,8 +22,7 @@ import { styles, colors } from "../../stylesheet/styles";
 import { xt, getDataStorage, setDataStorage } from "../../api/service";
 import { reFormatPicture } from "../../api/bind_api";
 import { apiAuth } from "../../api/authentication";
-import LoadingRows from "../../components/loadingRows";
-import NoRows from "../../components/noRows";
+import { LoadingRows, NoRows } from "../../components/main-layout";
 import { CheckViewPPN } from "../../components/variousRights";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { err } from "react-native-svg";
@@ -62,6 +61,15 @@ export default function ProjectScreen({ route, navigation }) {
     const [isLoading, setLoading] = useState(true);
 
     // const [isRefresh, setRefresh] = React.useState(false);
+
+    React.useEffect(() => {
+        const fetchLang = async () => {
+            const lang = await xt.getLang();
+            setLang(lang);
+        };
+        fetchLang();
+    }, []);
+
     useLayoutEffect(() => {
         navigation.setOptions({
             headerStyle: { backgroundColor: themeObject.colors.background },
@@ -70,6 +78,7 @@ export default function ProjectScreen({ route, navigation }) {
             headerRight: () => headerRight()
         });
     }, [route, isCountNoti, loadfile, isShowMenu, themeObject]);
+
     const headerLeft = () => {
         let _dataStore = global?.DataStore?.store?.length || 0
         return (
@@ -554,83 +563,84 @@ export default function ProjectScreen({ route, navigation }) {
 
     const renderItem = ({ item, index }) => {
         return (
-            <>
-                <View style={[styles.blockcard, { backgroundColor: themeObject.colors.font_dark }]}>
-                    <View style={{ width: '100%', height: 200 }}>
-                        <TouchableOpacity
-                            style={[
-                                {
-                                    flex: 1,
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    borderRadius: 6,
-                                    backgroundColor: themeObject.colors.back_dark
-                                }
-                            ]}
-                            onPress={() => beforeNextImage(item)}>
-                            {!$xt.isEmpty(item.project_img) ?
-                                (
-                                    <Image
-                                        style={{
-                                            width: "100%",
-                                            height: "100%",
-                                            borderRadius: 6,
-                                        }}
-                                        resizeMode="cover"
-                                        source={{ uri: item.project_img }}
-                                    />
-                                )
-                                :
-                                (
-                                    <Text style={[styles.h3, { color: '#8d99b2', }]}>no image avaliable</Text>
-                                )}
-                        </TouchableOpacity>
+            <TouchableOpacity
+                style={[styles.blockcard, { backgroundColor: themeObject.colors.font_dark }]}
+                onPress={() => beforeNextImage(item)}
+            >
+                <View style={{ width: '100%', height: 200 }}>
+                    <View
+                        style={[
+                            {
+                                flex: 1,
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                borderRadius: 6,
+                                backgroundColor: themeObject.colors.back_dark
+                            }
+                        ]}
+                    >
+                        {!$xt.isEmpty(item.project_img) ?
+                            (
+                                <Image
+                                    style={{
+                                        width: "100%",
+                                        height: "100%",
+                                        borderRadius: 6,
+                                    }}
+                                    resizeMode="cover"
+                                    source={{ uri: item.project_img }}
+                                />
+                            )
+                            :
+                            (
+                                <Text style={[styles.h3, { color: '#8d99b2', }]}>no image avaliable</Text>
+                            )}
                     </View>
-                    <View style={[styles.blockcard, { backgroundColor: themeObject.colors.font_dark }]}>
-                        <View style={{ flex: 1, flexDirection: 'row', backgroundColor: themeObject.colors.font_dark }}>
-                            <View style={{ flex: 3 }} >
-                                <Text style={[styles.h5_14, { fontSize: 12, color: themeObject.colors.text }]} numberOfLines={1} > {item.pre_des}</Text>
-                            </View>
-                            <View style={{ flex: 1, backgroundColor: themeObject.colors.font_dark }}>
-                                <View style={{ alignItems: 'flex-end', paddingEnd: 15 }}>
-                                    <Feather name="paperclip" size={20} color="#8d99b2" />
-                                </View>
-                            </View>
-                        </View>
-                        <View style={{ flex: 2, flexDirection: 'row', backgroundColor: themeObject.colors.font_dark }}>
-                            <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center' }}>
-                                <View style={{ width: 30, height: 30, borderWidth: 1, borderColor: colors.greentree, borderRadius: 30, }}>
-                                    <Image
-                                        style={{
-                                            width: "100%",
-                                            height: "100%",
-                                            borderRadius: 90,
-                                        }}
-                                        resizeMode="cover"
-                                        source={
-                                            !$xt.isEmpty(item.pathpic)
-                                                ? { uri: item.pathpic }
-                                                : require("../../../assets/images/user.png")
-                                        }
-                                    ></Image>
-                                </View>
-                                <Text style={[styles.h5, { marginLeft: 5, fontSize: 12, color: themeObject.colors.text }]}>PM : {item.empfullname_t || lang.overlayNoRows}</Text>
-                            </View>
-                            <View style={{ flex: 1, flexDirection: 'row' }}>
-                                <View style={{ flex: 1, alignItems: 'flex-end', justifyContent: 'center' }}>
-                                    <Text style={[styles.h5, { marginLeft: 5, fontSize: 12, color: themeObject.colors.text }]}>{lang.start_date}</Text>
-                                    <Text style={[styles.h5, { marginLeft: 5, fontSize: 12, color: themeObject.colors.text }]}>{item.startdate}</Text>
-                                </View>
-                                <View style={{ flex: 1, alignItems: 'flex-end', justifyContent: 'center' }}>
-                                    <Text style={[styles.h5, { marginLeft: 5, fontSize: 12, color: themeObject.colors.text }]}>{lang.emd_date}</Text>
-                                    <Text style={[styles.h5, { marginLeft: 5, fontSize: 12, color: themeObject.colors.text }]}>{item.enddate}</Text>
-                                </View>
-                            </View>
-                        </View>
-                    </View>
+                </View>
 
-                </View >
-            </>
+                <View style={[styles.blockcard, { backgroundColor: themeObject.colors.font_dark }]}>
+                    <View style={{ flex: 1, flexDirection: 'row', backgroundColor: themeObject.colors.font_dark }}>
+                        <View style={{ flex: 3 }} >
+                            <Text style={[styles.h5_14, { fontSize: 12, color: themeObject.colors.text }]} numberOfLines={1} > {item.pre_des}</Text>
+                        </View>
+                        <View style={{ flex: 1, backgroundColor: themeObject.colors.font_dark }}>
+                            <View style={{ alignItems: 'flex-end', paddingEnd: 15 }}>
+                                <Feather name="paperclip" size={20} color="#8d99b2" />
+                            </View>
+                        </View>
+                    </View>
+                    <View style={{ flex: 2, flexDirection: 'row', backgroundColor: themeObject.colors.font_dark }}>
+                        <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center' }}>
+                            <View style={{ width: 30, height: 30, borderWidth: 1, borderColor: colors.greentree, borderRadius: 30, }}>
+                                <Image
+                                    style={{
+                                        width: "100%",
+                                        height: "100%",
+                                        borderRadius: 90,
+                                    }}
+                                    resizeMode="cover"
+                                    source={
+                                        !$xt.isEmpty(item.pathpic)
+                                            ? { uri: item.pathpic }
+                                            : require("../../../assets/images/user.png")
+                                    }
+                                ></Image>
+                            </View>
+                            <Text style={[styles.h5, { marginLeft: 5, fontSize: 12, color: themeObject.colors.text }]}>PM : {item.empfullname_t || lang.overlayNoRows}</Text>
+                        </View>
+                        <View style={{ flex: 1, flexDirection: 'row' }}>
+                            <View style={{ flex: 1, alignItems: 'flex-end', justifyContent: 'center' }}>
+                                <Text style={[styles.h5, { marginLeft: 5, fontSize: 12, color: themeObject.colors.text }]}>{lang.start_date}</Text>
+                                <Text style={[styles.h5, { marginLeft: 5, fontSize: 12, color: themeObject.colors.text }]}>{item.startdate}</Text>
+                            </View>
+                            <View style={{ flex: 1, alignItems: 'flex-end', justifyContent: 'center' }}>
+                                <Text style={[styles.h5, { marginLeft: 5, fontSize: 12, color: themeObject.colors.text }]}>{lang.emd_date}</Text>
+                                <Text style={[styles.h5, { marginLeft: 5, fontSize: 12, color: themeObject.colors.text }]}>{item.enddate}</Text>
+                            </View>
+                        </View>
+                    </View>
+                </View>
+            </TouchableOpacity>
         );
     };
     return (

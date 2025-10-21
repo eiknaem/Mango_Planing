@@ -9,6 +9,7 @@ import Alert from "../components/Alert";
 import { colors } from "../stylesheet/styles";
 import MessageBox from "../api/msg";
 import { apiAuth } from "../api/authentication";
+
 export default function HomeLayout({ props }) {
     const appState = useRef(AppState.currentState);
     const [appStateVisible, setAppStateVisible] = useState(appState.current);

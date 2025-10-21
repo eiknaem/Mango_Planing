@@ -47,6 +47,7 @@ import SettingScreen from "./src/scenes/transition/setting.component";
 import ProfileScreen from "./src/scenes/transition/profile.component";
 import NotificationScreen from "./src/scenes/transition/notification.component";
 import EmployeeListScreen from "./src/scenes/transition/employee.component";
+import { HeadertaskScreen } from "./src/scenes/transition/headertask.component";
 
 //transition in Progress
 import ProgresstabScreen from "./src/scenes/transition/progresstabs.component";
@@ -311,6 +312,8 @@ export default function App({ }) {
                   <Stack.Screen name='CameraVideo' component={CameraVideoScreen} />
                   <Stack.Screen name='Incidence' component={IncidenceScreen} />
                   <Stack.Screen name='EmployeeList' component={EmployeeListScreen} />
+                  <Stack.Screen name='Headertask' component={HeadertaskScreen} />
+
                 </Stack.Navigator>
                 <UpdateVersion />
               </>
